@@ -1,0 +1,112 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+source bashlib-echo.sh
+source bashlib-doc.sh
+source bashlib-crypto.sh
+source bashlib-command.sh
+source bashlib-error.sh
+source bashlib-array.sh
+error::set_trap
+
+# The synopsis function is required by the doc::usage
+synopsis(){
+
+  cat << 'EOF'
+```bash
+sshx key command options
+```
+
+where `command` can be:
+
+* `passphrase`   - Add, delete, put a passphrase
+* `fingerprint`  - Print a fingerprint in md5 format
+* `info`         - Info over the key
+* `list`         - List the keys
+EOF
+
+}
+
+
+# Assign the first argument to a string
+COMMAND=${1:-}
+if [ "$COMMAND" = "" ]; then
+    doc::help
+    echo "A command is mandatory"
+    error::exit 1
+fi
+# Help
+if [[ "$COMMAND" =~ "-h"|"--help"|"help" ]]; then
+  man cryptx-key
+  exit
+fi
+# Remove the first argument from the argument list
+shift
+
+case "$COMMAND" in
+  "passphrase")
+    crypto-key-passphrase "$@"
+    ;;
+  "fingerprint")
+    # fingerprint in md5 format
+    if [ $# -eq 0 ]; then
+      echo::err "A key path is mandatory"
+      error::exit 1
+    fi
+    ssh-keygen -l -E md5 -f "$@"
+    ;;
+  "info"|"stat")
+    # shellcheck disable=SC2206
+    algo=$(crypto::get_private_key_algo "$1")
+    command::echo_eval "openssl $algo -in $1 -text -noout"
+  ;;
+  "list"|"ls")
+    # Ssh dir
+    KEYS=()
+    for FILE in "$HOME"/.ssh/*; do
+      TYPE=$(file -b "$FILE")
+      if [[ $TYPE  =~ "key" ]]; then
+        PROTECTIONS_STATUS=""
+        if crypto::is_private_key "$FILE"; then
+          STATUS=$(crypto::is_protected_key "$FILE" && echo $? || echo $?)
+          case $STATUS in
+            "0")
+              PROTECTIONS_STATUS="Protected"
+              ;;
+            1)
+              PROTECTIONS_STATUS=$(string::set_color red "Not protected")
+              ;;
+            *)
+              PROTECTIONS_STATUS="Unknown $STATUS"
+              ;;
+          esac
+          PROTECTIONS_STATUS="($PROTECTIONS_STATUS)"
+        fi
+        KEYS+=("$(printf "%-22s : %s %s" "$TYPE" "$FILE" "$PROTECTIONS_STATUS")")
+      fi
+    done
+    echo
+    echo "File System Keys"
+    echo
+    if [ "${#KEYS[@]}" -ge 1 ]; then
+      echo -e "$(array::join --sep $'\n' "${KEYS[@]}")" \
+      | string::add_marge
+    else
+      echo "No file system keys found"
+    fi
+    echo
+    # Agent
+    echo "Agent Keys"
+    echo
+    if OUTPUT=$(ssh-add -l); then
+      # shellcheck disable=SC2001
+      echo "$OUTPUT" | string::add_marge
+    else
+      echo "No agent keys found"
+    fi
+    echo
+    ;;
+  *)
+    echo  "Command $COMMAND is unknown"
+    exit 1
+esac
