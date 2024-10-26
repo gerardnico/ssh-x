@@ -3,9 +3,8 @@
 
 ## About
 
-CryptX - A collection of crypto command
+SSHX - A collection of command around OpenSSH.
 
 ## Documentation
 
-* [cryptx](docs/bin/sshx)
-* [bcrypt](docs/bin/cryptx-bcrypt.md)
+* [ssh](docs/bin/sshx)

@@ -82,7 +82,8 @@ case "$COMMAND" in
           esac
           PROTECTIONS_STATUS="($PROTECTIONS_STATUS)"
         fi
-        KEYS+=("$(printf "%-22s : %s %s" "$TYPE" "$FILE" "$PROTECTIONS_STATUS")")
+        FINGERPRINT=$(ssh-keygen -lf "$FILE")
+        KEYS+=("$(printf '%-22s : %s %s\n%-22s : %s' "$TYPE" "$FILE" "$PROTECTIONS_STATUS" "      Fingerprint" "$FINGERPRINT")"$'\n')
       fi
     done
     echo
