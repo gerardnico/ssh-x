@@ -1,0 +1,201 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+source bashlib-echo.sh
+source bashlib-doc.sh
+source bashlib-crypto.sh
+source bashlib-command.sh
+source bashlib-error.sh
+source bashlib-array.sh
+error::set_trap
+
+
+synopsis_comment(){
+
+  cat << 'EOF'
+
+Usage:
+
+```bash
+sshx key comment path "New comment"
+```
+
+where:
+
+* `path`         - The path to the key
+* `New Comment`  - A new comment
+EOF
+
+}
+
+comment_command(){
+  # Change the comment
+  if [ $# -ne 2 ]; then
+     synopsis_comment
+     echo::err "A key path and a comment is mandatory"
+     error::exit 1
+  fi
+  FILE=${1}
+  if [ ! -f "$FILE" ]; then
+    echo::err "The key file ($FILE) does not exist"
+    error::exit 1
+  fi
+  ssh-keygen -c -f "$FILE" -C "$2"
+}
+
+# The synopsis function is required by the doc::usage
+synopsis(){
+
+  cat << 'EOF'
+```bash
+sshx key command options
+```
+
+where `command` can be:
+
+* `comment`      - Set or print the comment
+* `passphrase`   - Set, delete a passphrase
+* `ls`           - List all the keys and fingerprint on the file system and agent (along with )
+* `rm`           - Remove a private key from the agent
+* `add`          - Add a private key from the agent
+EOF
+
+}
+
+list_command(){
+  # Ssh dir
+      KEYS=()
+      for FILE in "$HOME"/.ssh/*; do
+        TYPE=$(file -b "$FILE")
+        if [[ $TYPE  =~ "key" ]]; then
+          PROTECTIONS_STATUS=""
+          if crypto::is_private_key "$FILE"; then
+            STATUS=$(crypto::is_protected_key "$FILE" && echo $? || echo $?)
+            case $STATUS in
+              "0")
+                PROTECTIONS_STATUS="Protected"
+                ;;
+              1)
+                PROTECTIONS_STATUS=$(string::set_color red "Not protected")
+                ;;
+              *)
+                PROTECTIONS_STATUS="Unknown $STATUS"
+                ;;
+            esac
+            PROTECTIONS_STATUS="($PROTECTIONS_STATUS)"
+          fi
+          # Valid options for hash algo (-E) options are: “md5” and “sha256”.
+          FINGERPRINT=$(ssh-keygen -lf "$FILE")
+          KEYS+=("$(printf '%-22s : %s %s\n%-22s : %s' "$TYPE" "$FILE" "$PROTECTIONS_STATUS" "      Fingerprint" "$FINGERPRINT")"$'\n')
+        fi
+      done
+      echo
+      echo "File System Keys"
+      echo
+      if [ "${#KEYS[@]}" -ge 1 ]; then
+        echo -e "$(array::join --sep $'\n' "${KEYS[@]}")" \
+        | string::add_marge
+      else
+        echo "No file system keys found"
+      fi
+      echo
+      # Agent
+      echo "Agent Keys"
+      echo
+      if OUTPUT=$(ssh-add -l); then
+        # shellcheck disable=SC2001
+        echo -e "Keys Fingerprint:\n$OUTPUT\n" | string::add_marge
+        echo
+      else
+        echo "No agent keys found"
+      fi
+      if OUTPUT=$(ssh-add -L); then
+          # shellcheck disable=SC2001
+          echo -e "Public Keys:\n$OUTPUT\n" | string::add_marge
+      else
+          echo "No agent keys found"
+      fi
+      echo
+}
+
+
+remove_synopsis(){
+
+  cat << 'EOF'
+```bash
+sshx key rm [--all|-a] [path...]
+```
+
+where `options and argument` are:
+
+* `--all -a`  - Remove all keys
+* `path`      - Path to one ore more key to remove
+
+EOF
+
+}
+
+remove_command(){
+
+  args=$(getopt -l "all" -o "a" -- "$@")
+  # eval set to set the positional arguments back to $args
+  eval set -- "$args"
+
+  while [[ $# -gt 0 ]]
+  do
+     case "$1" in
+      "--all"|"-a")
+        ssh-add -D
+        shift;
+        break;
+      ;;
+      --)
+        # args
+        shift
+        ;;
+      *)
+        ssh-add -d "$1"
+        shift
+        ;;
+      esac
+  done
+
+}
+
+
+# Assign the first argument to a string
+COMMAND=${1:-}
+if [ "$COMMAND" = "" ]; then
+    doc::help
+    echo "A command is mandatory"
+    error::exit 1
+fi
+# Help
+if [[ "$COMMAND" =~ "-h"|"--help"|"help" ]]; then
+  man sshx-key
+  exit
+fi
+# Remove the first argument from the argument list
+shift
+
+
+case "$COMMAND" in
+  "passphrase")
+    sshx-key-passphrase "$@" || error::exit $?
+    ;;
+  "comment")
+    comment_command "$@"
+    ;;
+  "list"|"ls")
+    list_command
+    ;;
+  "rm"|"remove")
+    remove_command  "$@"
+    ;;
+  "add")
+        "$@"
+      ;;
+  *)
+    echo::err  "Command $COMMAND is unknown"
+    exit 1
+esac

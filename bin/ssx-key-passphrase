@@ -3,14 +3,32 @@
 set -Eeuo pipefail
 source bashlib-echo.sh
 source bashlib-crypto.sh
+source bashlib-doc.sh
 source bashlib-error.sh
 error::set_trap
 
+# The synopsis function is required by the doc::usage
+synopsis(){
+
+  cat << 'EOF'
+```bash
+sshx key passphrase command file
+```
+
+where `command` can be:
+
+* `delete`      - Delete the passphrase
+* `set`         - Set a passphrase
+
+EOF
+
+}
 
 COMMAND=${1:-}
 if [ "$COMMAND" = "" ]; then
+    doc::help
     echo::err "A command is mandatory"
-    exit 1
+    error::exit 1
 fi
 # Help
 if [[ "$COMMAND" =~ "-h"|"--help"|"help" ]]; then
@@ -21,28 +39,29 @@ shift  # Remove the first argument from the argument list
 
 FILE=${1:-}
 if [ "$FILE" = "" ]; then
+    doc::help
     echo::err "A path is mandatory"
-    exit 1
+    error::exit 1
 fi
 if [ ! -f "$FILE" ]; then
-  echo::err "The file ($FILE) does not exist"
-  exit 1
+  echo::err "The key file ($FILE) does not exist"
+  error::exit 1
 fi
 
 if ! crypto::is_openssh_private_key "$FILE"; then
     echo::err "The file ($FILE) is not a OpenSSH Private key. We don't support the format '$(file -b "$FILE")'";
-    return 1
+    error::exit 1
 fi
 
 case "$COMMAND" in
   "delete"|"remove"|"rm")
-    ssh-keygen -p -f "$1" -N ""
+    ssh-keygen -p -f "$FILE" -N ""
     ;;
   "set"|"add"|"put")
-    ssh-keygen -p -f "$1"
+    ssh-keygen -p -f "$FILE"
     ;;
   "modify"|"change"|"update")
-    ssh-keygen -p -f "$@"
+    ssh-keygen -p -f "$FILE"
     ;;
   *)
     echo::err  "Action $COMMAND is unknown"

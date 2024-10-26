@@ -42,7 +42,7 @@ shift  # Remove the first argument from the argument list
 
 case "$COMMAND" in
   "key")
-     sshx-key "$@" || error::exit $?
+     ssx-key "$@" || error::exit $?
     ;;
   *)
     echo  "Command $COMMAND is unknown"

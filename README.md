@@ -3,8 +3,8 @@
 
 ## About
 
-SSHX - A collection of command around OpenSSH.
+`SSH-X` is a command line utility called `ssx` that hosts a collection of utilities around `OpenSSH`
 
 ## Documentation
 
-* [ssh](docs/bin/sshx)
+* [ssx](docs/bin/ssx)
