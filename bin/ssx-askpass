@@ -4,7 +4,11 @@
 # Usage: Export this as SSH_ASKPASS environment variable
 # Example: export SSH_ASKPASS=/path/to/this/script
 
-# env
+
+# shellcheck disable=SC2001
+KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
+echo "Passphrase for Key: $KEY" >/dev/tty
+
 
 # Check if zenity is available for GUI prompt
 if command -v zenity >/dev/null 2>&1; then
