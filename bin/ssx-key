@@ -137,6 +137,12 @@ EOF
 
 remove_command(){
 
+  if [ $# -eq 0 ]; then
+    doc::help remove_synopsis
+    echo::err "No arguments supplied"
+    return 1
+  fi
+
   args=$(getopt -l "all" -o "a" -- "$@")
   # eval set to set the positional arguments back to $args
   eval set -- "$args"
