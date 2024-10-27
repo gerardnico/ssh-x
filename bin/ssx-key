@@ -4,6 +4,7 @@ set -Eeuo pipefail
 source bashlib-echo.sh
 source bashlib-doc.sh
 source bashlib-crypto.sh
+source bashlib-ssh.sh
 source bashlib-command.sh
 source bashlib-error.sh
 source bashlib-array.sh
@@ -55,12 +56,18 @@ where `command` can be:
 
 * `comment`      - Set or print the comment
 * `passphrase`   - Set, delete a passphrase
-* `ls`           - List all the keys and fingerprint on the file system and agent (along with )
+* `perm`         - Set the correct permission for the keys (ie 0600)
+* `ls`           - List all the keys, fingerprint and permissions on the file system and agent (along with )
 * `rm`           - Remove a private key from the agent
 * `add`          - Add a private key from the agent
+
+Permissions should be set to `0600`.
+We control also them for public key as `ssh` will refuse to use them as identity input otherwise.
+(ie in this case, ssh will lookup a private key in the agent)
 EOF
 
 }
+
 
 list_command(){
   # Ssh dir
@@ -68,25 +75,41 @@ list_command(){
       for FILE in "$HOME"/.ssh/*; do
         TYPE=$(file -b "$FILE")
         if [[ $TYPE  =~ "key" ]]; then
-          PROTECTIONS_STATUS=""
+          STATUS_MESSAGES=()
           if crypto::is_private_key "$FILE"; then
+
+            IS_LOADED=$(ssh::is_key_in_agent "$FILE" "$FILE" && echo $? || echo $?)
+            if [ "$IS_LOADED" == 0 ]; then
+              STATUS_MESSAGES+=("Loaded in Agent")
+            else
+              STATUS_MESSAGES+=("Not loaded in Agent")
+            fi
+
             STATUS=$(crypto::is_protected_key "$FILE" && echo $? || echo $?)
             case $STATUS in
               "0")
-                PROTECTIONS_STATUS="Protected"
+                STATUS_MESSAGES+=("Protected")
                 ;;
               1)
-                PROTECTIONS_STATUS=$(string::set_color red "Not protected")
+                STATUS_MESSAGES+=("$(string::set_color red "Not protected")")
                 ;;
               *)
-                PROTECTIONS_STATUS="Unknown $STATUS"
+                STATUS_MESSAGES+=("Unknown $STATUS")
                 ;;
             esac
-            PROTECTIONS_STATUS="($PROTECTIONS_STATUS)"
           fi
-          # Valid options for hash algo (-E) options are: “md5” and “sha256”.
+          # Good permissions?
+          PERM=$(stat -c "%a" "$FILE")
+          if [ "$PERM" != "600" ]; then
+            STATUS_MESSAGES+=("$(string::set_color red "Bad Permission ($PERM and not 0600)")")
+          fi
+          # Valid options for fingerprint  hash algo (-E) options are: “md5” and “sha256”.
           FINGERPRINT=$(ssh-keygen -lf "$FILE")
-          KEYS+=("$(printf '%-22s : %s %s\n%-22s : %s' "$TYPE" "$FILE" "$PROTECTIONS_STATUS" "      Fingerprint" "$FINGERPRINT")"$'\n')
+          STATUS_MESSAGE=""
+          if [ ${#STATUS_MESSAGES[@]} -ne 0 ]; then
+            STATUS_MESSAGE="($(IFS=,; echo "${STATUS_MESSAGES[*]}"))"
+          fi
+          KEYS+=("$(printf '%-22s : %s %s\n%-22s : %s' "$TYPE" "$FILE" "${STATUS_MESSAGE}" "      Fingerprint" "$FINGERPRINT")"$'\n')
         fi
       done
       echo
@@ -195,12 +218,16 @@ case "$COMMAND" in
   "list"|"ls")
     list_command
     ;;
+  "permission"|"perm")
+    chmod 0600 "$@"
+    ;;
   "rm"|"remove")
     remove_command  "$@"
     ;;
   "add")
-        "$@"
-      ;;
+    # ssh-add -t 300 "$@"
+    ssh-add "$@"
+    ;;
   *)
     echo::err  "Command $COMMAND is unknown"
     exit 1
