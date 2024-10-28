@@ -2,6 +2,8 @@
 # A ssh wrapper to load a private key
 # when identity file is a public key
 
+# When called by Git, /dev/stdout is not available, /dev/tty is
+
 source bashlib-echo.sh
 source bashlib-ssh.sh
 
@@ -14,8 +16,11 @@ SSX_KEY_HOME="$HOME/.ssh"
 # Where the original ssh is located
 SSX_SSH_PATH=/usr/bin/ssh
 
+# to debug
+export BASHLIB_LEVEL=$BASHLIB_DEBUG_LEVEL
+
 # To Debug, just uncomment the below line to see the args called
-echo "Ssh Command: ssh $*" > /dev/tty
+echo::debug "Ssh Command: ssh $*" > /dev/tty
 
 
 # We got the type of option (ie with or without value) with `ssh --help`
@@ -39,17 +44,15 @@ do
    esac
 done
 
-echo "Destination: $DESTINATION" > /dev/tty
-
 KEY=$($SSX_SSH_PATH -T -G "$DESTINATION" | grep identity | awk '{ print $2 }')
 
 
-echo "Key for destination ($DESTINATION): $KEY" > /dev/tty
+echo::debug "Key for destination before templating ($DESTINATION): $KEY" > /dev/tty
 # Get all characters after the @
 USER="${DESTINATION%%@*}"
 if [ "$USER" == "git" ]; then
   # A ssh performed by git
-  echo "GIT_PROTOCOL=$GIT_PROTOCOL" > /dev/tty
+  echo::debug "GIT_PROTOCOL=$GIT_PROTOCOL" > /dev/tty
   # Example of SSH Git:
   # * SSH Git Fetch or Pull
   # ssh -o SendEnv=GIT_PROTOCOL git@github.com git-upload-pack 'gerardnico/ssh-x.git'
@@ -58,8 +61,8 @@ if [ "$USER" == "git" ]; then
 fi
 # Get all characters before the @
 HOST="${DESTINATION##*@}"
-echo "User: $USER" > /dev/tty
-echo "Host: $HOST" > /dev/tty
+echo::debug "User: $USER" > /dev/tty
+echo::debug "Host: $HOST" > /dev/tty
 # Replace %r by user
 KEY=${KEY//%r/$USER}
 # Replace %n by Host
@@ -67,20 +70,21 @@ KEY=${KEY//%h/$HOST}
 # Replace the tilde with the home
 KEY=${KEY/#\~/$HOME}
 
-echo "Key for destination ($DESTINATION): $KEY" > /dev/tty
+
+echo::info "Key for destination ($DESTINATION): $KEY" > /dev/tty
 TYPE=$(file -b "$KEY")
-echo "Key File type: $TYPE" > /dev/tty
+echo::debug "Key File type: $TYPE" > /dev/tty
 if [[ $TYPE =~ "public key" ]]; then
     if ssh::is_key_in_agent "$KEY"; then
-      echo "Private Key is in agent" > /dev/tty
+      echo::info "Private Key is in agent" > /dev/tty
     else
-      echo "Private Key not in agent" > /dev/tty
+      echo::info "Private Key not in agent" > /dev/tty
       PRIVATE_KEY="$SSX_KEY_HOME/$(basename "$KEY" | sed 's/.pub//')"
       if [ ! -f "$PRIVATE_KEY" ]; then
         echo::err "The private key does not exist ($PRIVATE_KEY)"
         exit 1
       fi
-      echo "Loading Private Key ($PRIVATE_KEY)" > /dev/tty
+      echo::info "Loading Private Key ($PRIVATE_KEY)" > /dev/tty
       export SSH_ASKPASS=ssx-askpass-auto
       ssh-add "$PRIVATE_KEY"
     fi
