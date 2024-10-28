@@ -1,4 +1,5 @@
 #!/bin/bash
+# A ssh wrapper to load private key
 
 # Ref
 # https://unix.stackexchange.com/questions/514008/how-to-pass-to-ssh-the-key-stored-in-a-shell-environment-variable
@@ -44,5 +45,41 @@
 #echo "$key" >> $tempkeyfile
 #[[ $key =~ "END OPENSSH PRIVATE KEY" ]] || echo "-----END OPENSSH PRIVATE KEY-----" >> $tempkeyfile
 #$cmd -i "$tempkeyfile" "$@"
-#echo Nico
-/usr/bin/ssh "$@"
+
+SSH_PATH=/usr/bin/ssh
+# To Debug, just uncomment the below line to see the args called
+echo "Args: $*" > /dev/tty
+# Example:
+# * SSH Git Fetch or Pull
+# ssh -o SendEnv=GIT_PROTOCOL git@github.com git-upload-pack 'gerardnico/ssh-x.git'
+# * SSH Git Push
+# ssh git@github.com git-receive-pack 'gerardnico/ssh-x.git'
+
+
+# We got the type of option (ie with or without value) with `ssh --help`
+# ssh has no long option,
+# the `:` after each letter is to say that a value is expected after the option
+args=$(getopt --options "46AaCfGgKkMNnqsTtVvXxYyB:b:c:D:E:e:F:I:i:J:L:l:m:O:o:p:Q:R:S:W:w:" -- "$@")
+# eval set to set the positional arguments back to $args
+eval set -- "$args"
+DESTINATION=""
+while [[ $# -gt 0 ]]
+do
+   case "$1" in
+    --)
+      shift;
+      DESTINATION=$1
+      break;
+      ;;
+    *)
+      shift;
+      ;;
+   esac
+done
+
+echo "Destination: $DESTINATION" > /dev/tty
+
+KEY=$($SSH_PATH -T -G "$DESTINATION" | grep identity | awk '{ print $2 }')
+echo "Key for destination ($DESTINATION): $KEY" > /dev/tty
+
+$SSH_PATH "$@"
