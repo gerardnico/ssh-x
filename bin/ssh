@@ -48,7 +48,7 @@
 
 SSH_PATH=/usr/bin/ssh
 # To Debug, just uncomment the below line to see the args called
-echo "Args: $*" > /dev/tty
+echo "Ssh Command: GIT_PROTOCOL=$GIT_PROTOCOL ssh $*" > /dev/tty
 # Example:
 # * SSH Git Fetch or Pull
 # ssh -o SendEnv=GIT_PROTOCOL git@github.com git-upload-pack 'gerardnico/ssh-x.git'
