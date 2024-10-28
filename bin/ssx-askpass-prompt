@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Simple SSH_ASKPASS script to prompt for a password or passphrase
+# Usage: Export this as SSH_ASKPASS environment variable
+# Example: export SSH_ASKPASS=ssx-askpass-prompt
+
+source bashlib-ssh.sh
+
+# shellcheck disable=SC2001
+KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
+echo "Passphrase for Key $(basename "$KEY")" >/dev/tty
+
+ssh::get_secret_interactive "$1"

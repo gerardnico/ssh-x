@@ -68,7 +68,6 @@ EOF
 
 }
 
-
 list_command(){
   # Ssh dir
       KEYS=()

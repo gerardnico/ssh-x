@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Get the passphrase/password from pass
+
+# shellcheck disable=SC2001
+KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
+echo "Pin Pass Secret for key $KEY" >/dev/tty
+PWD=$(ssh::get_secret_interactive "$1")
+echo "$PWD"
+
