@@ -85,7 +85,7 @@ if [[ $TYPE =~ "public key" ]]; then
         exit 1
       fi
       echo::info "Loading Private Key ($PRIVATE_KEY)" > /dev/tty
-      export SSH_ASKPASS=ssx-askpass-auto
+      export SSH_ASKPASS=ssx-askpass-pass
       ssh-add "$PRIVATE_KEY"
     fi
 fi
