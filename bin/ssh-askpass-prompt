@@ -5,9 +5,10 @@
 # Example: export SSH_ASKPASS=ssx-askpass-prompt
 
 source bashlib-ssh.sh
+source bashlib-echo.sh
 
 # shellcheck disable=SC2001
 KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
-echo "Passphrase for Key $(basename "$KEY")" >/dev/tty
+echo::info "Passphrase for Key $(basename "$KEY")" >/dev/tty
 
 ssh::get_secret_interactive "$1"
