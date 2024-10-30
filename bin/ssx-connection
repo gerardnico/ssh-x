@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# in sec
-#ssh-add -t 300 ~/.ssh/id_rsa
-

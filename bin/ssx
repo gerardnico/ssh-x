@@ -13,7 +13,7 @@ synopsis(){
 
   cat << 'EOF'
 ```bash
-sshx command options
+ssx command options
 ```
 
 where `command` can be:
@@ -42,7 +42,7 @@ shift  # Remove the first argument from the argument list
 
 case "$COMMAND" in
   "key")
-     ssx-key "$@" || error::exit $?
+     ssh-key "$@" || error::exit $?
     ;;
   *)
     echo  "Command $COMMAND is unknown"

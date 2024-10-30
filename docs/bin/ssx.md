@@ -1,9 +1,9 @@
-% sshx(1) Version Latest | SSH Utilities and extensions
+% ssx(1) Version Latest | SSH Utilities and extensions
 
 
 # NAME
 
-`sshx` - A cli of SSH Utilities and eXtensions
+`ssx` - A cli of SSH Utilities and eXtensions
 
 
 ## SYNOPSIS

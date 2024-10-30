@@ -1,0 +1,54 @@
+#!/bin/bash
+# With a proxy command, ssh expects a tcp pipe
+
+source bashlib-echo.sh
+source bashlib-ssh.sh
+
+# Args
+HOSTNAME=$1
+echo::debug "Hostname: $HOSTNAME" >/dev/tty
+GIT_HOSTNAME=$2
+echo::debug "Git HostName: $GIT_HOSTNAME" >/dev/tty
+PORT=${3:-22}
+echo::debug "Port: $PORT" >/dev/tty
+USER=$4
+echo::debug "User: $USER" >/dev/tty
+
+
+# Global Env (location of private key)
+SSHX_KEY_HOME=${SSHX_KEY_HOME:="$HOME/.ssh"}
+
+# Get the identity conf
+KEY=$(ssh::get_identity "$USER" "$HOSTNAME")
+echo::info "Key for destination ($USER@$HOSTNAME): $KEY"
+
+# Check if this is a public key
+# If this is the case, load the private key
+TYPE=$(file -b "$KEY")
+echo::debug "Key File type: $TYPE" > /dev/tty
+if [[ $TYPE =~ "public key" ]]; then
+    # Check if the private key is in the agent
+    if ssh::is_key_in_agent "$KEY"; then
+      echo::info "Private Key is in agent" > /dev/tty
+    else
+      echo::info "Private Key is not in agent" > /dev/tty
+      PRIVATE_KEY="$SSHX_KEY_HOME/$(basename "$KEY" | sed 's/.pub//')"
+      if [ ! -f "$PRIVATE_KEY" ]; then
+        echo::err "The private key does not exist ($PRIVATE_KEY)"
+        exit 1
+      fi
+
+      # https://man.openbsd.org/ssh_config#AddKeysToAgent
+      LIFE=${SSHX_LIFE:-15m}
+      ADD_KEY_TO_AGENT_CONF=$(ssh::get_conf "AddKeysToAgent" "$USER" "$HOSTNAME")
+      if [[ ! "$ADD_KEY_TO_AGENT_CONF" =~ "yes"|"no"|"ask" ]]; then
+        LIFE=$ADD_KEY_TO_AGENT_CONF
+      fi
+      echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $LIFE" > /dev/tty
+      export SSH_ASKPASS=ssh-askpass-pass
+      ssh-add -t "$LIFE" "$PRIVATE_KEY"
+    fi
+fi
+
+# Create a dummy TCP Pipe
+nc "$HOSTNAME" "$PORT" > /dev/stdout < /dev/stdin

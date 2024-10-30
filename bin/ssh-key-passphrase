@@ -7,7 +7,7 @@ source bashlib-doc.sh
 source bashlib-error.sh
 error::set_trap
 
-# The synopsis function is required by the doc::usage
+# The synopsis function is required by the doc::help
 synopsis(){
 
   cat << 'EOF'
