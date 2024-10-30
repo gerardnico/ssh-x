@@ -1,5 +1,15 @@
 #!/bin/bash
 # With a proxy command, ssh expects a tcp pipe
+#
+# Note for dev:
+# All command output should be redirected to /dev/tty
+# It is important because no character should go to stdout as it's connected
+# to the tcp pipe
+#
+# The bashlib-echo.sh do it by default
+# but it should be done for all other command
+# example: `ssh-add > /dev/tty`
+#
 
 source bashlib-echo.sh
 source bashlib-ssh.sh
@@ -20,7 +30,7 @@ SSHX_KEY_HOME=${SSHX_KEY_HOME:-"$HOME/.ssh"}
 
 # Get the identity conf
 KEY=$(ssh::get_identity "$USER" "$HOSTNAME")
-echo::info "Key for destination ($USER@$HOSTNAME): $KEY"
+echo::debug "Key for destination ($USER@$HOSTNAME): $KEY"
 
 # Check if this is a public key
 # If this is the case, load the private key
@@ -44,7 +54,7 @@ if [[ $TYPE =~ "public key" ]]; then
       if [[ ! "$ADD_KEY_TO_AGENT_CONF" =~ "yes"|"no"|"ask" ]]; then
         LIFE=$ADD_KEY_TO_AGENT_CONF
       fi
-      echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $LIFE seconds" > /dev/tty
+      echo::debug "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $LIFE seconds" > /dev/tty
       export SSH_ASKPASS=${SSH_ASKPASS:-ssh-askpass-pass}
       ssh-add -t "$LIFE" "$PRIVATE_KEY" > /dev/tty
     fi
