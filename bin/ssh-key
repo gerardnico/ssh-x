@@ -209,7 +209,7 @@ shift
 
 case "$COMMAND" in
   "passphrase")
-    sshx-key-passphrase "$@" || error::exit $?
+    ssh-key-passphrase "$@" || error::exit $?
     ;;
   "comment")
     comment_command "$@"
