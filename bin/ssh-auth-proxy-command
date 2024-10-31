@@ -11,6 +11,9 @@
 # example: `ssh-add > /dev/tty`
 #
 
+set -Eeuo pipefail
+source bashlib-error.sh
+error::set_trap
 source bashlib-echo.sh
 source bashlib-ssh.sh
 
