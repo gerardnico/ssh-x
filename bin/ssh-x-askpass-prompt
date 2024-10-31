@@ -1,14 +1,30 @@
 #!/bin/bash
 # SSH_ASKPASS script to prompt for a password or passphrase via read
 # Usage: Export this as SSH_ASKPASS environment variable
-# Example: export SSH_ASKPASS=ssh-askpass-prompt
+# Example: export SSH_ASKPASS=ssh-x-askpass-prompt
+
+set -Eeuo pipefail
+source bashlib-error.sh
+error::set_trap
 
 # The 1 parameter got Enter passphrase for key xxx
 # The key can be extracted with the below command
 # KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
 # But we let the original prompt from now
-PROMPT=$1
+PROMPT=${1:-}
 
+if [ "$PROMPT" == "" ]; then
+  echo::err "A prompt label is expected as first argument"
+fi
+
+if [ "$PROMPT" == "synopsis" ]; then
+  cat << 'EOF'
+```bash
+ssh-x-askpass-prompt <Prompt Label>
+```
+EOF
+  exit
+fi
 
 # The prompt cli should not be prompt from zenity otherwise the stdout is messed up
 # and you get:

@@ -19,6 +19,7 @@ error::set_trap
 source bashlib-echo.sh
 source bashlib-ssh.sh
 
+
 # Args
 HOSTNAME=$1
 echo::debug "Hostname: $HOSTNAME" >/dev/tty
@@ -66,7 +67,7 @@ if [[ $TYPE =~ "public key" ]]; then
               LIFE=$ADD_KEY_TO_AGENT_CONF
             fi
             echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $LIFE seconds" > /dev/tty
-            export SSH_ASKPASS=${SSH_ASKPASS:-ssh-askpass-prompt}
+            export SSH_ASKPASS=${SSH_ASKPASS:-ssh-x-askpass-prompt}
             # No error, stdin
             ssh-add -t "$LIFE" "$PRIVATE_KEY"  1>/dev/tty 2>&1
             echo::info "ssh-Add Exit code: $?"

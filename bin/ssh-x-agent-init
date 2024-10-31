@@ -12,15 +12,15 @@ synopsis(){
 
   cat << 'EOF'
 ```bash
-ssx agent init
+ssh-x agent init
 ```
 EOF
 
 }
 
-
-if [[ -z "$SSHX_ENV" ]]; then
-  SSHX_ENV="$HOME"/.ssh/ssh-agent.env
+SSHX_ENV=${SSHX_ENV:-}
+if [[ "$SSHX_ENV" == "" ]]; then
+  SSHX_ENV="$HOME"/.ssh/ssh-x-agent.env
   export SSHX_ENV
 fi
 

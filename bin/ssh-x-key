@@ -18,7 +18,7 @@ synopsis_comment(){
 Usage:
 
 ```bash
-ssx key comment path "New comment"
+ssh-x key comment path "New comment"
 ```
 
 where:
@@ -49,7 +49,7 @@ synopsis(){
 
   cat << 'EOF'
 ```bash
-ssx key command options
+ssh-x key command options
 ```
 
 where `command` can be:
@@ -145,7 +145,7 @@ remove_synopsis(){
 
   cat << 'EOF'
 ```bash
-ssx key rm [--all|-a] [path...]
+ssh-x key rm [--all|-a] [path...]
 ```
 
 where `options and argument` are:
@@ -158,6 +158,10 @@ EOF
 }
 
 remove_command(){
+
+  # Note: for now, we remove the key from the agent
+  # but we could remove it from the known_hosts file with
+  # ssh-keygen -R remote_host
 
   if [ $# -eq 0 ]; then
     doc::help remove_synopsis
@@ -209,7 +213,7 @@ shift
 
 case "$COMMAND" in
   "passphrase")
-    ssh-key-passphrase "$@" || error::exit $?
+    ssh-x-key-passphrase "$@" || error::exit $?
     ;;
   "comment")
     comment_command "$@"

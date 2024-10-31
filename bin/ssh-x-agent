@@ -12,7 +12,7 @@ synopsis(){
 
   cat << 'EOF'
 ```bash
-ssx agent command options
+ssh-x agent command options
 ```
 
 where `command` can be:
@@ -26,17 +26,10 @@ EOF
 ###########
 # Main
 ###########
-args=$(getopt -- "$@")
-# eval set to set the positional arguments back to $args
-eval set -- "$args"
-
+COMMAND=""
 while [[ $# -gt 0 ]]
 do
    case "$1" in
-    --)
-      # args
-      shift
-      ;;
     *)
       COMMAND=$1
       shift
@@ -45,9 +38,17 @@ do
     esac
 done
 
+if [ "$COMMAND" == "" ]; then
+  doc::help
+  echo::err "No command found"
+  exit 1
+fi
 case "$COMMAND" in
   "init")
     agent_init "$@"
+    ;;
+  "synopsis")
+    synopsis
     ;;
   *)
     doc::help

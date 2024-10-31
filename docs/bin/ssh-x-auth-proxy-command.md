@@ -1,4 +1,4 @@
-% ssh-auth-proxy-command(1) Version Latest | Proxy command to load private keys from public key
+% ssh-x-auth-proxy-command(1) Version Latest | Proxy command to load private keys from public key
 
 # SSH Auth Proxy command
 
@@ -18,13 +18,13 @@ Host github.com
     # Public key as identity
     IdentityFile ~/.ssh/id_git_github.pub
     # Proxy command
-    ProxyCommand ssh-auth-proxy-command %h %n %p %r
+    ProxyCommand ssh-x-auth-proxy-command %h %n %p %r
     # Lifetime
     AddKeysToAgent 15m
     # Generally needed (ie don't try to use ssh-agent identity/keys)
     IdentitiesOnly yes
 ```
-`ssh-auth-proxy-command` will:
+`ssh-x-auth-proxy-command` will:
 * check if the private key of the public key `~/.ssh/id_git_github.pub` is present (ie loaded in the agent)
 * if not, it will add the private key located at `~/.ssh/id_git_github` with a lifetime of `15 minutes`
 * if the key is protected, it will ask for the passphrase
@@ -38,7 +38,7 @@ Change the [key store](#key-store) to `pass` by setting the following environmen
 ```bash
 export SSHX_KEY_STORE=pass
 ```
-With this environment, `ssh-auth-proxy-command` will:
+With this environment, `ssh-x-auth-proxy-command` will:
 * check if the private key of the public key `~/.ssh/id_git_github.pub` is present (ie loaded in the agent)
 * if not, it will add the private key located at `ssh/id_git_github` with a lifetime of `15 minutes`
 
@@ -47,7 +47,7 @@ is already protected and would have no passphrase but if this is the case, we st
 
 ### How to configure for all hosts
 This example shows you how you can configure `ssh` to
-use `ssh-auth-proxy-command` for all hosts thanks to the SSH template features.
+use `ssh-x-auth-proxy-command` for all hosts thanks to the SSH template features.
 
 For the `IdentityFile`, `ssh` supports the following placeholder:
 * `%h` : The remote hostname
@@ -63,7 +63,7 @@ Host *
     # Public key as identity
     IdentityFile ~/.ssh/id_%r_%h.pub
     # Proxy command
-    ProxyCommand ssh-auth-proxy-command %h %n %p %r
+    ProxyCommand ssh-x-auth-proxy-command %h %n %p %r
     # Lifetime
     AddKeysToAgent 30m
     # Generally needed (ie don't try to use ssh-agent identity/keys)
@@ -81,16 +81,16 @@ If you use `github`:
 ## Usage
 
 ```bash
-ssh-auth-proxy-command dnsHostname sshHostName port user
+ssh-x-auth-proxy-command dnsHostname sshHostName port user
 # in the `~/.ssh/conf` with placeholder
-ssh-auth-proxy-command %h %n %p %r
+ssh-x-auth-proxy-command %h %n %p %r
 ```
 
 You use it in the [ProxyCommand](https://man.openbsd.org/ssh_config#ProxyCommand) conf of your SSH configuration file (`~/.ssh/conf`)
 ```conf
 Host *
     # Proxy command
-    ProxyCommand ssh-auth-proxy-command %h %n %p %r
+    ProxyCommand ssh-x-auth-proxy-command %h %n %p %r
     # Your identity file should be a Public Key
     IdentityFile ~/.ssh/id_git_github.pub
 ```
@@ -121,7 +121,7 @@ For the 2 stores, the key is located at `$SSHX_KEY_HOME/KeyName` where :
   * `~/.ssh` for a [file key store](#key-store)
   * `ssh` for the [pass key store](#key-store)
 * `SSHX_LIFE`: the default lifetime of the loaded keys (Default to `15m`) Used if a time interval is not found in the `AddKeysToAgent` conf.
-* `SSH_ASKPASS`: to set how to retrieve the password. By default, we prompt with [ssh-askpass-prompt](ssh-askpass-prompt.md)
+* `SSH_ASKPASS`: to set how to retrieve the password. By default, we prompt with [ssh-x-askpass-prompt](ssh-x-askpass-prompt)
 
 
 ## How to 

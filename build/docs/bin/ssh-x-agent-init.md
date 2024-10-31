@@ -1,4 +1,4 @@
-% ssh-agent-init(1) Version Latest | Start one agent instance only
+% ssh-x-agent-init(1) Version Latest | Start one agent instance only
 
 
 # NAME
@@ -19,15 +19,15 @@ For the key usage, see the [add_keys function](#key-loading)
 
 
 ```bash
-export SSHX_ENV="$HOME"/.ssh/ssh-agent.env
-export SSH_AUTH_SOCK="$HOME"/.ssh/agent.sock
+export SSHX_ENV="/home/admin"/.ssh/ssh-x-agent.env
+export SSH_AUTH_SOCK="/home/admin"/.ssh/agent.sock
 SSH_KEY_PASSPHRASE_MY_KEY=secret
-ssx agent init
+ssh-x agent init
 ```
 
 ## SYNOPSIS
 
-${SYNOPSIS}
+
 
 ## KEY LOADING
 
