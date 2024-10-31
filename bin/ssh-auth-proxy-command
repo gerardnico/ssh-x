@@ -39,7 +39,7 @@ echo::debug "Key File type: $TYPE" > /dev/tty
 if [[ $TYPE =~ "public key" ]]; then
     # Check if the private key is in the agent
     if ssh::is_key_in_agent "$KEY"; then
-      echo::info "Private Key is in agent" > /dev/tty
+      echo::debug "Private Key is in agent" > /dev/tty
     else
       echo::info "Private Key is not in agent" > /dev/tty
       PRIVATE_KEY="$SSHX_KEY_HOME/$(basename "$KEY" | sed 's/.pub//')"
@@ -54,7 +54,7 @@ if [[ $TYPE =~ "public key" ]]; then
       if [[ ! "$ADD_KEY_TO_AGENT_CONF" =~ "yes"|"no"|"ask" ]]; then
         LIFE=$ADD_KEY_TO_AGENT_CONF
       fi
-      echo::debug "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $LIFE seconds" > /dev/tty
+      echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $LIFE seconds" > /dev/tty
       export SSH_ASKPASS=${SSH_ASKPASS:-ssh-askpass-pass}
       ssh-add -t "$LIFE" "$PRIVATE_KEY" > /dev/tty
     fi
