@@ -10,6 +10,8 @@
 # but it should be done for all other command
 # example: `ssh-add > /dev/tty`
 #
+# To debug set your level to debug
+# export BASHLIB_ECHO_LEVEL=4
 
 set -Eeuo pipefail
 source bashlib-error.sh
@@ -66,4 +68,5 @@ if [[ $TYPE =~ "public key" ]]; then
 fi
 
 # Create a dummy TCP Pipe
+echo::debug "Creating TCP PIPE to $HOSTNAME:$PORT"
 nc "$HOSTNAME" "$PORT" > /dev/stdout < /dev/stdin
