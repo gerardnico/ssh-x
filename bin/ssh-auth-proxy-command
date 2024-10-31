@@ -61,6 +61,7 @@ if [[ $TYPE =~ "public key" ]]; then
       export SSH_ASKPASS=${SSH_ASKPASS:-ssh-askpass-pass}
       # No error, stdin
       ssh-add -t "$LIFE" "$PRIVATE_KEY"  1>/dev/tty 2>&1
+      echo::info "ssh-Add Exit code: $?"
     fi
 fi
 
