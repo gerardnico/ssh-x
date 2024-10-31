@@ -56,7 +56,8 @@ if [[ $TYPE =~ "public key" ]]; then
       fi
       echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $LIFE seconds" > /dev/tty
       export SSH_ASKPASS=${SSH_ASKPASS:-ssh-askpass-pass}
-      ssh-add -t "$LIFE" "$PRIVATE_KEY" > /dev/tty
+      # No error, stdin
+      ssh-add -t "$LIFE" "$PRIVATE_KEY"  1>/dev/tty 2>&1
     fi
 fi
 
