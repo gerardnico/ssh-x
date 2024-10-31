@@ -1,19 +1,21 @@
 #!/bin/bash
-
-# Simple SSH_ASKPASS script to prompt for a password or passphrase
+# SSH_ASKPASS script to prompt for a password or passphrase via read
 # Usage: Export this as SSH_ASKPASS environment variable
-# Example: export SSH_ASKPASS=ssx-askpass-prompt
+# Example: export SSH_ASKPASS=ssh-askpass-prompt
 
-source bashlib-ssh.sh
-source bashlib-echo.sh
+# The 1 parameter got Enter passphrase for key xxx
+# The key can be extracted with the below command
+# KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
+# But we let the original prompt from now
+PROMPT=$1
 
-# shellcheck disable=SC2001
-KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
-echo::info "Passphrase for Key $(basename "$KEY")" >/dev/tty
 
-# The prompt cli should be read, not zenity otherwise the stdout is messed up
+# The prompt cli should not be prompt from zenity otherwise the stdout is messed up
 # and you get:
 #   Error: Received disconnect from UNKNOWN port 65535:11: Bye Bye
 #   Disconnected from UNKNOWN port 65535
 #   fatal: Could not read from remote repository.
-ssh::get_secret_interactive "$1" "read"
+
+echo "$PROMPT" >/dev/tty
+read -rs password </dev/tty
+echo "$password"

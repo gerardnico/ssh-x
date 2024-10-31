@@ -1,0 +1,53 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+source bashlib-error.sh
+error::set_trap
+source bashlib-echo.sh
+source bashlib-doc.sh
+source bashlib-ssh.sh
+
+
+synopsis(){
+
+  cat << 'EOF'
+```bash
+ssx agent init
+```
+EOF
+
+}
+
+
+if [[ -z "$SSHX_ENV" ]]; then
+  SSHX_ENV="$HOME"/.ssh/ssh-agent.env
+  export SSHX_ENV
+fi
+
+# Load the env if available
+ssh::agent_load_env "$SSHX_ENV"
+
+# Get the state
+SSH_AGENT_RUN_STATE=$(ssh::agent_state)
+if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_AGENT_RUN_STATE" = 2 ]; then
+  echo "Agent not started"
+  # The sock may be a symlink, so -e check that
+  # -f check only if it's a regular file
+  if [ -e "$SSH_AUTH_SOCK" ]; then
+    echo "Deleting Sock file $SSH_AUTH_SOCK"
+    rm "$SSH_AUTH_SOCK"
+  fi
+  echo "Starting Agent"
+  ssh::agent_start "$SSHX_ENV" "$SSH_AUTH_SOCK"
+  ssh::add_keys
+elif [ "$SSH_AUTH_SOCK" ] && [ "$SSH_AGENT_RUN_STATE" = 1 ]; then
+  echo Agent not started but empty
+  ssh::add_keys
+fi
+
+unset SSHX_ENV
+
+
+
+
+

@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+source bashlib-error.sh
+error::set_trap
+source bashlib-echo.sh
+source bashlib-doc.sh
+
+
+# The synopsis function is required by the doc::usage
+synopsis(){
+
+  cat << 'EOF'
+```bash
+ssx agent command options
+```
+
+where `command` can be:
+
+* `init`  - Start one agent by computer (not one by session)
+
+EOF
+
+}
+
+###########
+# Main
+###########
+args=$(getopt -- "$@")
+# eval set to set the positional arguments back to $args
+eval set -- "$args"
+
+while [[ $# -gt 0 ]]
+do
+   case "$1" in
+    --)
+      # args
+      shift
+      ;;
+    *)
+      COMMAND=$1
+      shift
+      break
+      ;;
+    esac
+done
+
+case "$COMMAND" in
+  "init")
+    agent_init "$@"
+    ;;
+  *)
+    doc::help
+    echo::err  "Command $COMMAND is unknown"
+    exit 1
+esac

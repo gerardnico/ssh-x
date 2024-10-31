@@ -46,24 +46,35 @@ if [[ $TYPE =~ "public key" ]]; then
     if ssh::is_key_in_agent "$KEY"; then
       echo::debug "Private Key is in agent" > /dev/tty
     else
-      echo::info "Private Key is not in agent" > /dev/tty
+      SSHX_KEY_STORE=${SSHX_KEY_STORE:-file}
       PRIVATE_KEY="$SSHX_KEY_HOME/$(basename "$KEY" | sed 's/.pub//')"
-      if [ ! -f "$PRIVATE_KEY" ]; then
-        echo::err "The private key does not exist ($PRIVATE_KEY)"
-        exit 1
-      fi
+      case "$SSHX_KEY_STORE" in
+        "pass")
 
-      # https://man.openbsd.org/ssh_config#AddKeysToAgent
-      LIFE=${SSHX_LIFE:-15m}
-      ADD_KEY_TO_AGENT_CONF=$(ssh::get_conf "AddKeysToAgent" "$USER" "$HOSTNAME")
-      if [[ ! "$ADD_KEY_TO_AGENT_CONF" =~ "yes"|"no"|"ask" ]]; then
-        LIFE=$ADD_KEY_TO_AGENT_CONF
-      fi
-      echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $LIFE seconds" > /dev/tty
-      export SSH_ASKPASS=${SSH_ASKPASS:-ssh-askpass-pass}
-      # No error, stdin
-      ssh-add -t "$LIFE" "$PRIVATE_KEY"  1>/dev/tty 2>&1
-      echo::info "ssh-Add Exit code: $?"
+        ;;
+        "file")
+            echo::info "Private Key is not in agent" > /dev/tty
+            if [ ! -f "$PRIVATE_KEY" ]; then
+              echo::err "The private key does not exist ($PRIVATE_KEY)"
+              exit 1
+            fi
+
+            # https://man.openbsd.org/ssh_config#AddKeysToAgent
+            LIFE=${SSHX_LIFE:-15m}
+            ADD_KEY_TO_AGENT_CONF=$(ssh::get_conf "AddKeysToAgent" "$USER" "$HOSTNAME")
+            if [[ ! "$ADD_KEY_TO_AGENT_CONF" =~ "yes"|"no"|"ask" ]]; then
+              LIFE=$ADD_KEY_TO_AGENT_CONF
+            fi
+            echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $LIFE seconds" > /dev/tty
+            export SSH_ASKPASS=${SSH_ASKPASS:-ssh-askpass-prompt}
+            # No error, stdin
+            ssh-add -t "$LIFE" "$PRIVATE_KEY"  1>/dev/tty 2>&1
+            echo::info "ssh-Add Exit code: $?"
+            ;;
+        *)
+          echo::err "The SSHX_KEY_STORE value ($SSHX_KEY_STORE) is not supported. It should be 'file' or 'pass'"
+          ;;
+      esac
     fi
 fi
 
