@@ -18,7 +18,8 @@ ssh-x command options
 
 where `command` can be:
 
-* `key`       - Key operation
+* `key`   - Key operation
+* `info`  - List the state of SSH Key and Agent
 
 EOF
 
@@ -43,6 +44,9 @@ shift  # Remove the first argument from the argument list
 case "$COMMAND" in
   "key")
      ssh-x-key "$@" || error::exit $?
+    ;;
+  "info")
+     ssh-x-key "ls" "$@" || error::exit $?
     ;;
   "synopsis")
     synopsis

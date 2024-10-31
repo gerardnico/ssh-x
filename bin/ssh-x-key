@@ -74,45 +74,65 @@ list_command(){
       for FILE in "$HOME"/.ssh/*; do
         TYPE=$(file -b "$FILE")
         if [[ $TYPE  =~ "key" ]]; then
-          STATUS_MESSAGES=()
+          KEY_LINES=()
+          # Print f template
+          # template for key properties
+          PRINTF_TEMPLATE_KEY_PROPS="%22s : %s"
+          # Head
+          KEY_LINES+=("$(printf "%-22s : %s" "$TYPE" "$FILE")")
+          # Fingerprint
+          # Valid options for fingerprint  hash algo (-E) options are: “md5” and “sha256”.
+          FINGERPRINT=$(ssh-keygen -lf "$FILE")
+          # shellcheck disable=SC2059
+          KEY_LINES+=("$(printf "$PRINTF_TEMPLATE_KEY_PROPS" "Fingerprint" "$FINGERPRINT")")
+
+          # Private Key Only
           if crypto::is_private_key "$FILE"; then
 
+            # Loaded State
             IS_LOADED=$(ssh::is_key_in_agent "$FILE" "$FILE" && echo $? || echo $?)
+            LOADED_STATE=""
             if [ "$IS_LOADED" == 0 ]; then
-              STATUS_MESSAGES+=("Loaded in Agent")
+              LOADED_STATE="Loaded"
             else
-              STATUS_MESSAGES+=("Not loaded in Agent")
+              LOADED_STATE="Not loaded"
             fi
+            # shellcheck disable=SC2059
+            KEY_LINES+=("$(printf "$PRINTF_TEMPLATE_KEY_PROPS" "Agent" "$LOADED_STATE")")
 
+            # Protection
             STATUS=$(crypto::is_protected_key "$FILE" && echo $? || echo $?)
             case $STATUS in
               "0")
-                STATUS_MESSAGES+=("Protected")
+                PROTECTION_STATE="Protected"
                 ;;
               1)
-                STATUS_MESSAGES+=("$(string::set_color red "Not protected")")
+                PROTECTION_STATE="$(string::set_color red "Not protected")"
                 ;;
               *)
-                STATUS_MESSAGES+=("Unknown $STATUS")
+                PROTECTION_STATE="Unknown $STATUS"
                 ;;
             esac
+            # shellcheck disable=SC2059
+            KEY_LINES+=("$(printf "$PRINTF_TEMPLATE_KEY_PROPS" "Protection" "$PROTECTION_STATE")")
           fi
+
           # Good permissions?
           PERM=$(stat -c "%a" "$FILE")
           if [ "$PERM" != "600" ]; then
-            STATUS_MESSAGES+=("$(string::set_color red "Bad Permission ($PERM and not 0600)")")
+            PERMISSION_STATE="$(string::set_color red "Bad ($PERM and not 0600)")"
+          else
+            PERMISSION_STATE="Good (0600)"
           fi
-          # Valid options for fingerprint  hash algo (-E) options are: “md5” and “sha256”.
-          FINGERPRINT=$(ssh-keygen -lf "$FILE")
-          STATUS_MESSAGE=""
-          if [ ${#STATUS_MESSAGES[@]} -ne 0 ]; then
-            STATUS_MESSAGE="($(IFS=,; echo "${STATUS_MESSAGES[*]}"))"
-          fi
-          KEYS+=("$(printf '%-22s : %s %s\n%-22s : %s' "$TYPE" "$FILE" "${STATUS_MESSAGE}" "      Fingerprint" "$FINGERPRINT")"$'\n')
+          # shellcheck disable=SC2059
+          KEY_LINES+=("$(printf "$PRINTF_TEMPLATE_KEY_PROPS" "File Permission" "$PERMISSION_STATE")")
+
+          KEYS+=("$(IFS=$'\n'; echo "${KEY_LINES[*]}")"$'\n')
         fi
       done
       echo
       echo "File System Keys"
+      echo "----------------"
       echo
       if [ "${#KEYS[@]}" -ge 1 ]; then
         echo -e "$(array::join --sep $'\n' "${KEYS[@]}")" \
@@ -123,20 +143,22 @@ list_command(){
       echo
       # Agent
       echo "Agent Keys"
+      echo "----------------"
       echo
       if OUTPUT=$(ssh-add -l); then
         # shellcheck disable=SC2001
-        echo -e "Keys Fingerprint:\n$OUTPUT\n" | string::add_marge
+        echo -e "Public Key Fingerprint Listing of loaded Private Keys:\n$OUTPUT\n" | string::add_marge
         echo
       else
         echo "No agent keys found"
       fi
-      if OUTPUT=$(ssh-add -L); then
-          # shellcheck disable=SC2001
-          echo -e "Public Keys:\n$OUTPUT\n" | string::add_marge
-      else
-          echo "No agent keys found"
-      fi
+      # We should have an option here
+#      if OUTPUT=$(ssh-add -L); then
+#          # shellcheck disable=SC2001
+#          echo -e "Key Listing (as Public Keys):\n$OUTPUT\n" | string::add_marge
+#      else
+#          echo "No agent keys found"
+#      fi
       echo
 }
 
@@ -230,6 +252,9 @@ case "$COMMAND" in
   "add")
     # ssh-add -t 300 "$@"
     ssh-add "$@"
+    ;;
+  "synopsis")
+    synopsis;
     ;;
   *)
     doc::help

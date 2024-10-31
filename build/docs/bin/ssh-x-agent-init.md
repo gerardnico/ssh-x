@@ -21,8 +21,8 @@ For the key usage, see the [add_keys function](#key-loading)
 ```bash
 export SSHX_ENV="/home/admin"/.ssh/ssh-x-agent.env
 export SSH_AUTH_SOCK="/home/admin"/.ssh/agent.sock
-SSH_KEY_PASSPHRASE_MY_KEY=secret
-ssh-x agent init
+export SSH_KEY_PASSPHRASE_MY_KEY=secret
+ssh-x-agent-init
 ```
 
 ## SYNOPSIS

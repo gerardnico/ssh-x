@@ -32,11 +32,17 @@ if [ "$COMMAND" = "" ]; then
 fi
 # Help
 if [[ "$COMMAND" =~ "-h"|"--help"|"help" ]]; then
-  man cryptx-key-passphrase
+  doc::help
+  exit
+fi
+# Doc?
+if [ "$COMMAND" == "synopsis" ]; then
+  synopsis
   exit
 fi
 shift  # Remove the first argument from the argument list
 
+# The second argument is the first after the shift
 FILE=${1:-}
 if [ "$FILE" = "" ]; then
     doc::help

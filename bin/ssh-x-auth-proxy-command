@@ -19,6 +19,15 @@ error::set_trap
 source bashlib-echo.sh
 source bashlib-ssh.sh
 
+# Synopsis for doc
+if [ "${1:-}" == "synopsis" ]; then
+  cat << EOF
+\`\`\`bash
+$(basename "$0") <Prompt Label>
+\`\`\`
+EOF
+  exit
+fi
 
 # Args
 HOSTNAME=$1

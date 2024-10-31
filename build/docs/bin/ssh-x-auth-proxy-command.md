@@ -107,7 +107,7 @@ We support 2 keys store:
 
 You choose your key store with the variable [SSHX_KEY_STORE](#environment)
 
-For the 2 stores, the key is located at `$SSHX_KEY_HOME/KeyName` where :
+For the 2 stores, the key is located at `/KeyName` where :
 * [SSHX_KEY_HOME](#environment) defines the directory location.
 * `KeyName` is the name of the private key (ie the public key without the `.pub` extension)
 

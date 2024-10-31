@@ -10,3 +10,12 @@
 
 ${SYNOPSIS}
 
+
+## SSX Alias
+
+`SSH-X` is also known as `ssx`. You can create an alias in your `.bashrc`
+
+Example:
+```bash
+alias ssx="ssh-x"
+```
