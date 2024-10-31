@@ -18,7 +18,8 @@ ssh-x command options
 
 where `command` can be:
 
-* `key`   - Key operation
+* `agent` - Agent operations
+* `key`   - Key operations
 * `info`  - List the state of SSH Key and Agent
 
 EOF

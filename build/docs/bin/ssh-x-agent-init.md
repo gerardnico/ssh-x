@@ -4,10 +4,12 @@
 # NAME
 
 
-Start an agent and [load keys](#key-loading) protected or not
+`ssh-x-agent-init`:
+* start only one SSH agent instance (by default SSH starts an agent by session)
+* and [load keys](#key-loading) protected or not
 
 
-## EXAMPLE
+## EXAMPLE / USAGE
 
 This is used in your `.bashrc` or env loading script
 
