@@ -23,19 +23,12 @@ echo "export SSH_AUTH_SOCK=$SSH_AUTH_SOCK"$'\n'
 
 # SSH_ASKPASS
 SSH_ASKPASS=${SSH_ASKPASS:-}
-if [ "$SSH_ASKPASS" == "" ]; then
- if command::exists 'ssh-askpass'; then
-    # ssh-add call it
-    SSH_ASKPASS=
-  else
-    SSH_ASKPASS=ssh-x-askpass-prompt
-  fi
-fi
-echo "# SSH_ASKPASS: The prompting pass program (when not in a terminal)"
-echo "# export SSH_ASKPASS=$SSH_ASKPASS"$'\n'
+echo "# SSH_ASKPASS: The prompting pass program"
+echo "# SSH_ASKPASS=$SSH_ASKPASS"$'\n'
 
-echo "# SSH_ASKPASS_REQUIRE: The prompting pass program (when not in a terminal)"
-echo "export SSH_ASKPASS_REQUIRE=${SSH_ASKPASS_REQUIRE:-prefer}"
+# SSH_ASKPASS_REQUIRE
+echo "# SSH_ASKPASS_REQUIRE: Control the prompting pass program behaviour"
+echo "# SSH_ASKPASS_REQUIRE=${SSH_ASKPASS_REQUIRE:-}"$'\n'
 
 # SSH_X_KEY_STORE
 SSH_X_KEY_STORE=${SSH_X_KEY_STORE:-file}

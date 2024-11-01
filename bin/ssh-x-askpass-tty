@@ -1,7 +1,6 @@
 #!/bin/bash
-# SSH_ASKPASS script to prompt for a password or passphrase via read
-# Usage: Export this as SSH_ASKPASS environment variable
-# Example: export SSH_ASKPASS=ssh-x-askpass-prompt
+# SSH_ASKPASS script to prompt without a terminal
+
 
 set -Eeuo pipefail
 source bashlib-error.sh

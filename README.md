@@ -13,4 +13,5 @@
   * [ssh-x-agent-init](build/docs/bin/ssh-x-agent-init.md) - Start a singleton SSH agent if not started and load private keys automatically
   * [ssh-x-env](build/docs/bin/ssh-x-env.md) - Print the SSH environment
 * [ssh-x-auth-proxy-command](build/docs/bin/ssh-x-auth-proxy-command.md) - An Ssh `ProxyCommand` that load automatically your private keys when you use your public key as identity
-* [ssh-x-askpass-read](build/docs/bin/ssh-x-askpass-read.md) - A `SSH_ASKPASS` read implementation to ask a secret
+* [ssh-x-askpass-tty](build/docs/bin/ssh-x-askpass-tty.md) - A `SSH_ASKPASS` implementation to ask a secret from a terminal
+* [ssh-x-askpass-no-tty](build/docs/bin/ssh-x-askpass-no-tty.md) - A `SSH_ASKPASS` implementation to ask a secret from a GUI

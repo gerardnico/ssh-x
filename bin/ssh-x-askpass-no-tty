@@ -1,0 +1,54 @@
+#!/bin/bash
+# SSH_ASKPASS script to prompt for a password or passphrase via read
+# Usage: Export this as SSH_ASKPASS environment variable
+# Example: export SSH_ASKPASS=ssh-x-askpass-prompt
+
+set -Eeuo pipefail
+source bashlib-error.sh
+error::set_trap
+source bashlib-echo.sh
+source bashlib-command.sh
+
+# The 1 parameter got Enter passphrase for key xxx
+# The key can be extracted with the below command
+# KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
+# But we let the original prompt from now
+PROMPT=${1:-}
+
+if [ "$PROMPT" == "" ]; then
+  echo::err "A prompt label is expected as first argument"
+fi
+
+if [ "$PROMPT" == "synopsis" ]; then
+  cat << EOF
+\`\`\`bash
+$(basename "$0") <Prompt Label>
+\`\`\`
+EOF
+  exit
+fi
+
+
+SSH_X_ASKPASS_CLI=${2:-zenity}
+if ! command::exists "$SSH_X_ASKPASS_CLI"; then
+  echo::err "The SSH_X_ASKPASS_CLI ($SSH_X_ASKPASS_CLI) command does not exist"
+  exit 1
+fi
+
+case "$SSH_X_ASKPASS_CLI" in
+  "zenity")
+
+    if ! PASSWORD=$(zenity --password --title="$1" 2>/dev/null); then
+      echo::err "User has canceled"
+    else
+      echo "$PASSWORD"
+    fi
+    ;;
+  "whiptail")
+    whiptail --passwordbox "$1:" 8 78 3>&1 1>&2 2>&3
+    ;;
+  *)
+    echo:err "SSH_X_ASKPASS_CLI value ($SSH_X_ASKPASS_CLI) is unknown"
+    exit 1
+    ;;
+esac

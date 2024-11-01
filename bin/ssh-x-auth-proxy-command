@@ -13,6 +13,21 @@
 # To debug set your level to debug
 # export BASHLIB_ECHO_LEVEL=4
 
+# Env
+# An IDE From WSL would execute it as:
+# wsl bin/ssh-x-auth-proxy-command
+# The shell is then:
+#   * not interactive.
+#   * not a login shell.
+# We source bashrc in this case to get a good PATH value
+if [[ ! $- == *i* ]] && ! shopt -q login_shell; then
+  if [ -f $HOME/.bashrc ] && [ "$BASH_ENV" == "" ]; then
+    echo::debug "Sourcing bashrc"
+    source $HOME/.bashrc
+  fi
+fi
+
+# Start
 set -Eeuo pipefail
 source bashlib-error.sh
 error::set_trap
@@ -30,15 +45,17 @@ EOF
   exit
 fi
 
+ECHO_FD=$(echo::get_file_descriptor)
+
 # Args
 HOSTNAME=$1
-echo::debug "Hostname: $HOSTNAME" >/dev/tty
+echo::debug "Hostname: $HOSTNAME"
 GIT_HOSTNAME=$2
-echo::debug "Git HostName: $GIT_HOSTNAME" >/dev/tty
+echo::debug "Git HostName: $GIT_HOSTNAME"
 PORT=${3:-22}
-echo::debug "Port: $PORT" >/dev/tty
+echo::debug "Port: $PORT"
 USER=$4
-echo::debug "User: $USER" >/dev/tty
+echo::debug "User: $USER"
 
 
 # Env
@@ -79,23 +96,21 @@ if [[ $TYPE =~ "public key" ]]; then
             fi
             echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $SSH_X_LIFE seconds"
 
+            export SSH_ASKPASS_REQUIRE=require
             if tty -s; then
-                echo::debug "Script has a terminal"
-                export SSH_ASKPASS_REQUIRE=never
+                echo::info "Script has a terminal"
                 # export SSH_ASKPASS=ssh-x-askpass
-            else
-                echo::debug "Script has no terminal"
                 # The prompt cli should not be prompt from zenity otherwise the stdout is messed up
                 # and you get:
                 #   Error: Received disconnect from UNKNOWN port 65535:11: Bye Bye
                 #   Disconnected from UNKNOWN port 65535
                 #   fatal: Could not read from remote repository.
-                export SSH_ASKPASS=ssh-x-askpass-read
-                export SSH_ASKPASS_REQUIRE=require
-#                PASSWORD=$(ssh-x-askpass-read "Give me your pass")
-#                echo::debug "Pass: $PASSWORD"
+                export SSH_ASKPASS=ssh-x-askpass-tty
+            else
+                echo::info "Script has no terminal"
+                export SSH_ASKPASS=ssh-x-askpass-no-tty
             fi
-            command::echo_debug_eval "ssh-add -t $SSH_X_LIFE $PRIVATE_KEY  1>/dev/tty 2>&1"
+            command::echo_debug_eval "ssh-add -t $SSH_X_LIFE $PRIVATE_KEY  1>$ECHO_FD 2>&1"
             ;;
         *)
           echo::err "The SSH_X_KEY_STORE value ($SSH_X_KEY_STORE) is not supported. It should be 'file' or 'pass'"
