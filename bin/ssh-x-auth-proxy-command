@@ -22,7 +22,7 @@
 # We source bashrc in this case to get a good PATH value
 if [[ ! $- == *i* ]] && ! shopt -q login_shell; then
   if [ -f $HOME/.bashrc ] && [ "$BASH_ENV" == "" ]; then
-    echo::debug "Sourcing bashrc"
+    echo "Sourcing bashrc" > /dev/stderr
     source $HOME/.bashrc
   fi
 fi
@@ -97,19 +97,8 @@ if [[ $TYPE =~ "public key" ]]; then
             echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $SSH_X_LIFE seconds"
 
             export SSH_ASKPASS_REQUIRE=require
-            if tty -s; then
-                echo::info "Script has a terminal"
-                # export SSH_ASKPASS=ssh-x-askpass
-                # The prompt cli should not be prompt from zenity otherwise the stdout is messed up
-                # and you get:
-                #   Error: Received disconnect from UNKNOWN port 65535:11: Bye Bye
-                #   Disconnected from UNKNOWN port 65535
-                #   fatal: Could not read from remote repository.
-                export SSH_ASKPASS=ssh-x-askpass-tty
-            else
-                echo::info "Script has no terminal"
-                export SSH_ASKPASS=ssh-x-askpass-no-tty
-            fi
+            export SSH_ASKPASS=ssh-x-askpass
+
             command::echo_debug_eval "ssh-add -t $SSH_X_LIFE $PRIVATE_KEY  1>$ECHO_FD 2>&1"
             ;;
         *)

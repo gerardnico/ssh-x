@@ -29,16 +29,30 @@ EOF
 fi
 
 
-SSH_X_ASKPASS_CLI=${2:-zenity}
-if ! command::exists "$SSH_X_ASKPASS_CLI"; then
+SSH_X_ASKPASS_CLI=${SSH_X_ASKPASS_CLI:-}
+if [ "$SSH_X_ASKPASS_CLI" == "" ]; then
+  if sh -c ": >/dev/tty" >/dev/null 2>/dev/null; then
+    # /dev/tty is available
+
+    # We use read with dev/tty if we can. Why?
+    # With zenity, you get:
+    #   Error: Received disconnect from UNKNOWN port 65535:11: Bye Bye
+    #   Disconnected from UNKNOWN port 65535
+    #   fatal: Could not read from remote repository.
+    SSH_X_ASKPASS_CLI='read'
+  else
+   SSH_X_ASKPASS_CLI='zenity'
+  fi
+fi
+
+if [ ! "$SSH_X_ASKPASS_CLI" = "read" ] && ! command::exists "$SSH_X_ASKPASS_CLI"; then
   echo::err "The SSH_X_ASKPASS_CLI ($SSH_X_ASKPASS_CLI) command does not exist"
   exit 1
 fi
 
 case "$SSH_X_ASKPASS_CLI" in
   "zenity")
-
-    if ! PASSWORD=$(zenity --password --title="$1" 2>/dev/null); then
+    if ! PASSWORD=$(zenity --password --title="$PROMPT" 2>/dev/null); then
       echo::err "User has canceled"
     else
       echo "$PASSWORD"
@@ -46,6 +60,11 @@ case "$SSH_X_ASKPASS_CLI" in
     ;;
   "whiptail")
     whiptail --passwordbox "$1:" 8 78 3>&1 1>&2 2>&3
+    ;;
+  "read")
+    echo "$PROMPT" > /dev/tty
+    read -r -s password < /dev/tty
+    echo "$password"
     ;;
   *)
     echo:err "SSH_X_ASKPASS_CLI value ($SSH_X_ASKPASS_CLI) is unknown"
