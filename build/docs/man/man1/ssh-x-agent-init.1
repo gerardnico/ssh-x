@@ -49,9 +49,18 @@ the passphrase is defined by env variables
 The function will loop through the environment variables with the
 \f[V]SSH_KEY_PASSPHRASE\f[R] prefix.
 .PP
-When it finds an env such as \f[V]SSH_KEY_PASSPHRASE_MY_KEY\f[R], the
-function will: * try to find a file at \f[V]\[ti]/.ssh/my_key\f[R] * add
-it with the value of \f[V]SSH_KEY_PASSPHRASE_MY_KEY\f[R] as passphrase
+Syntax:
+.IP
+.nf
+\f[C]
+export SSH_KEY_PASSPHRASE_KeyName=KeyPassphrase
+\f[R]
+.fi
+.PP
+Example: If the function finds the env
+\f[V]SSH_KEY_PASSPHRASE_MY_KEY\f[R], it will: * load the key located at
+\f[V]\[ti]/.ssh/my_key\f[R] * add it with the value of
+\f[V]SSH_KEY_PASSPHRASE_MY_KEY\f[R] as passphrase
 .SS REF
 .IP \[bu] 2
 Idea based on
@@ -59,3 +68,11 @@ auto-launching-ssh-agent-on-git-for-windows (https://docs.github.com/en/authenti
 .IP \[bu] 2
 Project with same functionality:
 keychain (https://github.com/funtoo/keychain)
+.SS ENV
+.IP \[bu] 2
+\f[V]SSH_X_AGENT_ENV\f[R]: the location where the env file is saved
+(Default to \f[V]\[ti]/.ssh/ssh-x-agent.env\f[R])
+.IP \[bu] 2
+\f[V]SSH_X_KEY_HOME\f[R]: a path to the directory containing your
+private keys.
+Default to \f[V]\[ti]/.ssh\f[R]

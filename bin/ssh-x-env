@@ -1,0 +1,69 @@
+#!/bin/bash
+
+set -Eeuo pipefail
+source bashlib-error.sh
+error::set_trap
+source bashlib-echo.sh
+source bashlib-command.sh
+
+if [ "${1:-}" == "synopsis" ]; then
+    cat << 'EOF'
+Print the env for SSH. You would use it in your script to set the SSH environment.
+```bash
+eval $(ssh-x-env)
+```
+EOF
+  exit
+fi
+
+# SSH_AUTH_SOCK
+SSH_AUTH_SOCK=${SSH_AUTH_SOCK:-"$HOME/.ssh/agent.sock"}
+echo "# SSH_AUTH_SOCK: The location of the agent socket"
+echo "export SSH_AUTH_SOCK=$SSH_AUTH_SOCK"$'\n'
+
+# SSH_ASKPASS
+SSH_ASKPASS=${SSH_ASKPASS:-}
+if [ "$SSH_ASKPASS" == "" ]; then
+ if command::exists 'ssh-askpass'; then
+    # ssh-add call it
+    SSH_ASKPASS=
+  else
+    SSH_ASKPASS=ssh-x-askpass-prompt
+  fi
+fi
+echo "# SSH_ASKPASS: The prompting pass program"
+echo "# export SSH_ASKPASS=$SSH_ASKPASS"$'\n'
+
+# SSH_X_KEY_STORE
+SSH_X_KEY_STORE=${SSH_X_KEY_STORE:-file}
+echo "# SSH_X_KEY_STORE: The store of the keys (file or pass)"
+echo "export SSH_X_KEY_STORE=$SSH_X_KEY_STORE"$'\n'
+
+# SSH_X_KEY_HOME
+case "$SSH_X_KEY_STORE" in
+  "pass")
+    SSH_X_KEY_HOME=${SSH_X_KEY_HOME:-"ssh"}
+    ;;
+  "file")
+    SSH_X_KEY_HOME=${SSH_X_KEY_HOME:-"$HOME/.ssh"}
+    ;;
+  *)
+    echo::err "The store ($SSH_X_KEY_STORE) is not supported. Change your env value of SSH_X_KEY_STORE. It should be 'file' or 'pass'"
+    exit 1
+    ;;
+esac
+echo "# SSH_X_KEY_HOME: The path in the key store (SSH_X_KEY_STORE)"
+echo "export SSH_X_KEY_HOME=$SSH_X_KEY_HOME"$'\n'
+
+# SSH_X_AGENT_ENV
+SSH_X_AGENT_ENV=${SSH_X_AGENT_ENV:-}
+if [[ "$SSH_X_AGENT_ENV" == "" ]]; then
+  SSH_X_AGENT_ENV="$HOME/.ssh/ssh-x-agent.env"
+fi
+echo "# SSH_X_AGENT_ENV: The location of the agent env file"
+echo "export SSH_X_AGENT_ENV=$SSH_X_AGENT_ENV"$'\n'
+
+# SSH_X_LIFE
+echo "# SSH_X_LIFE: The life of keys in the agent"
+SSH_X_LIFE=${SSH_X_LIFE:-15m}
+echo "export SSH_X_LIFE=$SSH_X_LIFE"$'\n'

@@ -130,47 +130,9 @@ Host *
 .PP
 Your Identity (https://man.openbsd.org/ssh_config#IdentityFile) should
 be a public key
-.SS Key Store
-.PP
-We support 2 keys store: * \f[V]file\f[R]: where the key is stored in a
-file system directory (default) * \f[V]pass\f[R]: where the key is
-stored in the pass password manager (https://www.passwordstore.org/)
-.PP
-You choose your key store with the variable SSHX_KEY_STORE
-.PP
-For the 2 stores, the key is located at \f[V]/KeyName\f[R] where : *
-SSHX_KEY_HOME defines the directory location.
-* \f[V]KeyName\f[R] is the name of the private key (ie the public key
-without the \f[V].pub\f[R] extension)
 .SS Environment
-.IP \[bu] 2
-\f[V]SSHX_KEY_STORE\f[R]: the name of the key store that contains the
-private key.
-Possible values:
-.RS 2
-.IP \[bu] 2
-\f[V]file\f[R]: (default) for the file system
-.IP \[bu] 2
-\f[V]pass\f[R]: for the pass password
-manager (https://www.passwordstore.org/)
-.RE
-.IP \[bu] 2
-\f[V]SSHX_KEY_HOME\f[R]: a path to the directory containing your private
-keys.
-Default to:
-.RS 2
-.IP \[bu] 2
-\f[V]\[ti]/.ssh\f[R] for a file key store
-.IP \[bu] 2
-\f[V]ssh\f[R] for the pass key store
-.RE
-.IP \[bu] 2
-\f[V]SSHX_LIFE\f[R]: the default lifetime of the loaded keys (Default to
-\f[V]15m\f[R]) Used if a time interval is not found in the
-\f[V]AddKeysToAgent\f[R] conf.
-.IP \[bu] 2
-\f[V]SSH_ASKPASS\f[R]: to set how to retrieve the password.
-By default, we prompt with ssh-x-askpass-prompt
+.PP
+See \f[V]ssh-x-env(1)\f[R]
 .SS How to
 .SS How to add your private key to pass
 .PP

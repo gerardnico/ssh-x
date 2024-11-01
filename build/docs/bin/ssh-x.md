@@ -15,6 +15,7 @@ ssh-x command options
 where `command` can be:
 
 * `agent` - Agent operations
+* `env`   - The env
 * `key`   - Key operations
 * `info`  - List the state of SSH Key and Agent
 

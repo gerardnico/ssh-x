@@ -41,11 +41,22 @@ This command will load keys that are:
 
 The function will loop through the environment variables with the `SSH_KEY_PASSPHRASE` prefix.
 
-When it finds an env such as `SSH_KEY_PASSPHRASE_MY_KEY`, the function will:
-* try to find a file at `~/.ssh/my_key`
+Syntax:
+```bash
+export SSH_KEY_PASSPHRASE_KeyName=KeyPassphrase
+```
+
+Example:
+If the function finds the env `SSH_KEY_PASSPHRASE_MY_KEY`, it will:
+* load the key located at `~/.ssh/my_key`
 * add it with the value of `SSH_KEY_PASSPHRASE_MY_KEY` as passphrase
 
 ## REF
 
 * Idea based on [auto-launching-ssh-agent-on-git-for-windows](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/working-with-ssh-key-passphrases#auto-launching-ssh-agent-on-git-for-windows)
 * Project with same functionality: [keychain](https://github.com/funtoo/keychain)
+
+## ENV
+
+* `SSH_X_AGENT_ENV`: the location where the env file is saved (Default to `~/.ssh/ssh-x-agent.env`)
+* `SSH_X_KEY_HOME`: a path to the directory containing your private keys. Default to `~/.ssh`

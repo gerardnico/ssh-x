@@ -18,14 +18,12 @@ EOF
 
 }
 
-SSHX_ENV=${SSHX_ENV:-}
-if [[ "$SSHX_ENV" == "" ]]; then
-  SSHX_ENV="$HOME"/.ssh/ssh-x-agent.env
-  export SSHX_ENV
-fi
+# Load the env
+eval "$(ssh-x-env)"
+
 
 # Load the env if available
-ssh::agent_load_env "$SSHX_ENV"
+ssh::agent_load_env "$SSH_X_AGENT_ENV"
 
 # Get the state
 SSH_AGENT_RUN_STATE=$(ssh::agent_state)
@@ -38,14 +36,14 @@ if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_AGENT_RUN_STATE" = 2 ]; then
     rm "$SSH_AUTH_SOCK"
   fi
   echo "Starting Agent"
-  ssh::agent_start "$SSHX_ENV" "$SSH_AUTH_SOCK"
+  ssh::agent_start "$SSH_X_AGENT_ENV" "$SSH_AUTH_SOCK"
   ssh::add_keys
 elif [ "$SSH_AUTH_SOCK" ] && [ "$SSH_AGENT_RUN_STATE" = 1 ]; then
   echo Agent not started but empty
   ssh::add_keys
 fi
 
-unset SSHX_ENV
+unset SSH_X_AGENT_ENV
 
 
 

@@ -32,9 +32,9 @@ Host github.com
 ### Load a private key stored in the pass password manager store 
 
 With the same configuration as [previously](#load-a-private-key-stored-on-the-file-system-for-one-host)
-but with the [pass manager as key store](#key-store)
+but with the [pass manager as key store](ssh-x-env#key-store)
 
-Change the [key store](#key-store) to `pass` by setting the following environment variable in your `.bashrc`
+Change the [key store](ssh-x-env#key-store) to `pass` by setting the following environment variable in your `.bashrc`
 ```bash
 export SSHX_KEY_STORE=pass
 ```
@@ -99,29 +99,11 @@ Host *
 
 Your [Identity](https://man.openbsd.org/ssh_config#IdentityFile) should be a public key
 
-## Key Store
-
-We support 2 keys store:
-* `file`: where the key is stored in a file system directory (default)
-* `pass`: where the key is stored in the [pass password manager](https://www.passwordstore.org/)
-
-You choose your key store with the variable [SSHX_KEY_STORE](#environment)
-
-For the 2 stores, the key is located at `$SSHX_KEY_HOME/KeyName` where :
-* [SSHX_KEY_HOME](#environment) defines the directory location.
-* `KeyName` is the name of the private key (ie the public key without the `.pub` extension)
 
 
 ## Environment
 
-* `SSHX_KEY_STORE`: the name of the [key store](#key-store) that contains the private key. Possible values:
-  * `file`: (default) for the file system
-  * `pass`: for the [pass password manager](https://www.passwordstore.org/)
-* `SSHX_KEY_HOME`: a path to the directory containing your private keys. Default to:
-  * `~/.ssh` for a [file key store](#key-store)
-  * `ssh` for the [pass key store](#key-store)
-* `SSHX_LIFE`: the default lifetime of the loaded keys (Default to `15m`) Used if a time interval is not found in the `AddKeysToAgent` conf.
-* `SSH_ASKPASS`: to set how to retrieve the password. By default, we prompt with [ssh-x-askpass-prompt](ssh-x-askpass-prompt)
+See `ssh-x-env(1)`
 
 
 ## How to 
