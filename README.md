@@ -12,5 +12,5 @@
   * [ssh-x-key-passphrase](build/docs/bin/ssh-x-key-passphrase.md) - Add or remove a key passphrase
   * [ssh-x-agent-init](build/docs/bin/ssh-x-agent-init.md) - Start a singleton SSH agent if not started and load private keys automatically
   * [ssh-x-env](build/docs/bin/ssh-x-env.md) - Print the SSH environment
-* [ssh-x-auth-proxy-command](build/docs/bin/ssh-x-auth-proxy-command.md) - An Ssh `ProxyCommand` that load automatically your private keys from your public key as identity
-* [ssh-x-askpass-prompt](build/docs/bin/ssh-x-askpass-prompt.md) - A `SSH_ASKPASS` implementation to ask a secret
+* [ssh-x-auth-proxy-command](build/docs/bin/ssh-x-auth-proxy-command.md) - An Ssh `ProxyCommand` that load automatically your private keys when you use your public key as identity
+* [ssh-x-askpass-read](build/docs/bin/ssh-x-askpass-read.md) - A `SSH_ASKPASS` read implementation to ask a secret

@@ -31,11 +31,16 @@ eval $(ssh-x-env)
 .fi
 .SS ENV
 .SS SSH
+.PP
+\f[V]ssh-x-env\f[R] prints also ssh
+env (https://man.openbsd.org/ssh.1#ENVIRONMENT)
 .IP \[bu] 2
-\f[V]SSH_AUTH_SOCK\f[R]: The location of the agent socket Default to
+SSH_AUTH_SOCK (https://man.openbsd.org/ssh.1#SSH_AUTH_SOCK): The
+location of the agent socket Default to
 \f[V]/home/admin/.ssh/agent.sock\f[R]
 .IP \[bu] 2
-\f[V]SSH_ASKPASS\f[R] to set how to retrieve the password.
+SSH_ASKPASS (https://man.openbsd.org/ssh.1#SSH_ASKPASS) to set how to
+retrieve the password without a terminal.
 .RS 2
 .IP \[bu] 2
 Default to ssh-askpass (https://man.openbsd.org/ssh-askpass.1) if
@@ -43,6 +48,12 @@ present
 .IP \[bu] 2
 otherwise, we prompt with ssh-x-askpass-prompt
 .RE
+.IP \[bu] 2
+SSH_ASKPASS_REQUIRE (https://man.openbsd.org/ssh.1#SSH_ASKPASS_REQUIRE)
+.PP
+If ssh does not have a terminal associated with it but DISPLAY and
+SSH_ASKPASS are set, it will execute the program specified by
+SSH_ASKPASS and open an X11 window to read the passphrase.
 .SS SSH-X
 .IP \[bu] 2
 \f[V]SSH_X_KEY_STORE\f[R]: the name of the key store that contains the

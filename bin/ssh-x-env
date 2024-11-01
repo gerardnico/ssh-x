@@ -31,8 +31,11 @@ if [ "$SSH_ASKPASS" == "" ]; then
     SSH_ASKPASS=ssh-x-askpass-prompt
   fi
 fi
-echo "# SSH_ASKPASS: The prompting pass program"
+echo "# SSH_ASKPASS: The prompting pass program (when not in a terminal)"
 echo "# export SSH_ASKPASS=$SSH_ASKPASS"$'\n'
+
+echo "# SSH_ASKPASS_REQUIRE: The prompting pass program (when not in a terminal)"
+echo "export SSH_ASKPASS_REQUIRE=${SSH_ASKPASS_REQUIRE:-prefer}"
 
 # SSH_X_KEY_STORE
 SSH_X_KEY_STORE=${SSH_X_KEY_STORE:-file}

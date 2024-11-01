@@ -103,8 +103,6 @@ Your [Identity](https://man.openbsd.org/ssh_config#IdentityFile) should be a pub
 
 ## Environment
 
-Note that `SSH_X_LIFE` is used if a time interval is not found in the `AddKeysToAgent` conf.
-
 See `ssh-x-env(1)`
 
 

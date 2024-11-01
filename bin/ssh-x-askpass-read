@@ -18,19 +18,14 @@ if [ "$PROMPT" == "" ]; then
 fi
 
 if [ "$PROMPT" == "synopsis" ]; then
-  cat << 'EOF'
-```bash
-ssh-x-askpass-prompt <Prompt Label>
-```
+  cat << EOF
+\`\`\`bash
+$(basename "$0") <Prompt Label>
+\`\`\`
 EOF
   exit
 fi
 
-# The prompt cli should not be prompt from zenity otherwise the stdout is messed up
-# and you get:
-#   Error: Received disconnect from UNKNOWN port 65535:11: Bye Bye
-#   Disconnected from UNKNOWN port 65535
-#   fatal: Could not read from remote repository.
 
 echo "$PROMPT" >/dev/tty
 read -rs password </dev/tty
