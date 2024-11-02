@@ -21,9 +21,10 @@
 #   * not a login shell.
 # We source bashrc in this case to get a good PATH value
 if [[ ! $- == *i* ]] && ! shopt -q login_shell; then
-  if [ -f $HOME/.bashrc ] && [ "$BASH_ENV" == "" ]; then
+  if [ -f "$HOME"/.bashrc ] && [ "$BASH_ENV" == "" ]; then
     echo "Sourcing bashrc" > /dev/stderr
-    source $HOME/.bashrc
+    # Don't or you will got a recursion
+    # source $HOME/.bashrc
   fi
 fi
 

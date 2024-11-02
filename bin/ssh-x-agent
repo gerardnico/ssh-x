@@ -45,7 +45,7 @@ if [ "$COMMAND" == "" ]; then
 fi
 case "$COMMAND" in
   "init")
-    agent_init "$@"
+    ssh-x-agent-init "$@"
     ;;
   "synopsis")
     synopsis

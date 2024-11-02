@@ -50,6 +50,9 @@ case "$COMMAND" in
   "info")
      ssh-x-key "ls" "$@" || error::exit $?
     ;;
+  "agent")
+    ssh-x-agent "$@" || error::exit $?
+      ;;
   "synopsis")
     synopsis
     ;;
