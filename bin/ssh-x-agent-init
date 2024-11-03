@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -Eeuo pipefail
 source bashlib-error.sh
@@ -18,6 +18,36 @@ EOF
 
 }
 
+# @description
+#    Start an agent and store the env in a file passed as argument
+#    When starting an agent, this function will create an ENV file
+#    The env file contains:
+#    * the [SSH_AUTH_SOCK](https://man.archlinux.org/man/ssh.1.en#SSH_AUTH_SOCK)
+#    * and SSH_AGENT_PID env values
+#    It's a wrapper around `eval "$(ssh-agent -s)"`
+#
+# @arg $1 - The env file path (default to `$SSH_ENV`)
+# @arg $2 - The socket file path (default to `$SSH_AUTH_SOCK`)
+# @example
+#   agent_start
+#   # after the agent start, you would get
+#   SSH_AUTH_SOCK=/tmp/ssh-XXXXXXVv4IgB/agent.17882; export SSH_AUTH_SOCK;
+#   SSH_AGENT_PID=17883; export SSH_AGENT_PID;
+#   echo Agent pid 17883;
+#
+agent_start () {
+	local ENV="${1:-SSH_X_AGENT_ENV}"
+	local SOCK="${2:-$SSH_AUTH_SOCK}"
+  echo "Starting the ssh-agent with"
+  echo "  * env file  at $ENV"
+  echo "  * sock file at $SSH_AUTH_SOCK"
+  echo "  * a default lifetime of $SSH_X_LIFE"
+  (umask 077; ssh-agent -a "$SOCK" -t "$SSH_X_LIFE" >| "$ENV")
+  # shellcheck disable=SC1090
+  source "$ENV" >| /dev/null ;
+}
+
+
 # Load the env
 eval "$(ssh-x-env)"
 
@@ -26,8 +56,8 @@ eval "$(ssh-x-env)"
 ssh::agent_load_env "$SSH_X_AGENT_ENV"
 
 # Get the state
-SSH_AGENT_RUN_STATE=$(ssh::agent_state)
-if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_AGENT_RUN_STATE" = 2 ]; then
+SSH_X_AGENT_RUN_STATE=$(ssh::agent_state)
+if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_X_AGENT_RUN_STATE" = 2 ]; then
   echo "Agent not started"
   # The sock may be a symlink, so -e check that
   # -f check only if it's a regular file
@@ -36,13 +66,14 @@ if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_AGENT_RUN_STATE" = 2 ]; then
     rm "$SSH_AUTH_SOCK"
   fi
   echo "Starting Agent"
-  ssh::agent_start "$SSH_X_AGENT_ENV" "$SSH_AUTH_SOCK"
+  agent_start "$SSH_X_AGENT_ENV" "$SSH_AUTH_SOCK"
   ssh::add_keys
-elif [ "$SSH_AUTH_SOCK" ] && [ "$SSH_AGENT_RUN_STATE" = 1 ]; then
+elif [ "$SSH_AUTH_SOCK" ] && [ "$SSH_X_AGENT_RUN_STATE" = 1 ]; then
   echo Agent not started but empty
   ssh::add_keys
 fi
 
+cat "$SSH_X_AGENT_ENV"
 unset SSH_X_AGENT_ENV
 
 

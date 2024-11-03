@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # SSH_ASKPASS script to prompt for a password or passphrase via read
 # Usage: Export this as SSH_ASKPASS environment variable
 # Example: export SSH_ASKPASS=ssh-x-askpass-prompt

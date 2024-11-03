@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -Eeuo pipefail
 source bashlib-error.sh
@@ -50,6 +50,7 @@ case "$SSH_X_KEY_STORE" in
 esac
 echo "# SSH_X_KEY_HOME: The path in the key store (SSH_X_KEY_STORE)"
 echo "export SSH_X_KEY_HOME=$SSH_X_KEY_HOME"$'\n'
+
 
 # SSH_X_AGENT_ENV
 SSH_X_AGENT_ENV=${SSH_X_AGENT_ENV:-}

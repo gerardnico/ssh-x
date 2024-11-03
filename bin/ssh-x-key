@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -Eeuo pipefail
 source bashlib-echo.sh
@@ -140,25 +140,46 @@ list_command(){
       else
         echo "No file system keys found"
       fi
-      echo
+      # SSH_X_AGENT_RUN_STATE
+      SSH_X_AGENT_RUN_STATE=$(ssh::agent_state)
+      SSH_X_AGENT_STATE_NAME=""
+      case $SSH_X_AGENT_RUN_STATE in
+        0)
+          SSH_X_AGENT_STATE_NAME="Agent running with key"
+          ;;
+        1)
+          SSH_X_AGENT_STATE_NAME="Agent running without key"
+          ;;
+        2)
+          SSH_X_AGENT_STATE_NAME="Agent not running"
+          ;;
+        *)
+          SSH_X_AGENT_STATE_NAME="$SSH_X_AGENT_RUN_STATE is an Unknown State"
+      esac
       # Agent
-      echo "Agent Keys"
+      echo "Agent"
       echo "----------------"
+      echo "Agent State: $SSH_X_AGENT_STATE_NAME"
       echo
-      if OUTPUT=$(ssh-add -l); then
-        # shellcheck disable=SC2001
-        echo -e "Public Key Fingerprint Listing of loaded Private Keys:\n$OUTPUT\n" | string::add_marge
+      if [ "$SSH_X_AGENT_RUN_STATE" == 0 ]; then
+        # Agent
+        echo "Agent Keys":
         echo
-      else
-        echo "No agent keys found"
+        if OUTPUT=$(ssh-add -l); then
+          # shellcheck disable=SC2001
+          echo -e "Public Key Fingerprint Listing of loaded Private Keys:\n$OUTPUT\n" | string::add_marge
+          echo
+        else
+          echo "No agent keys found"
+        fi
+        # We should have an option here
+  #      if OUTPUT=$(ssh-add -L); then
+  #          # shellcheck disable=SC2001
+  #          echo -e "Key Listing (as Public Keys):\n$OUTPUT\n" | string::add_marge
+  #      else
+  #          echo "No agent keys found"
+  #      fi
       fi
-      # We should have an option here
-#      if OUTPUT=$(ssh-add -L); then
-#          # shellcheck disable=SC2001
-#          echo -e "Key Listing (as Public Keys):\n$OUTPUT\n" | string::add_marge
-#      else
-#          echo "No agent keys found"
-#      fi
       echo
 }
 

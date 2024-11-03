@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # With a proxy command, ssh expects a tcp pipe
 #
 # Note for dev:
@@ -13,28 +14,18 @@
 # To debug set your level to debug
 # export BASHLIB_ECHO_LEVEL=4
 
-# Env
-# An IDE From WSL would execute it as:
-# wsl bin/ssh-x-auth-proxy-command
-# The shell is then:
-#   * not interactive.
-#   * not a login shell.
-# We source bashrc in this case to get a good PATH value
-if [[ ! $- == *i* ]] && ! shopt -q login_shell; then
-  if [ -f "$HOME"/.bashrc ] && [ "$BASH_ENV" == "" ]; then
-    echo "Sourcing bashrc" > /dev/stderr
-    # Don't or you will got a recursion
-    # source $HOME/.bashrc
-  fi
-fi
 
 # Start
 set -Eeuo pipefail
-source bashlib-error.sh
+# shellcheck source=../../bash-lib/lib/bashlib-error.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
 error::set_trap
-source bashlib-echo.sh
-source bashlib-ssh.sh
-source bashlib-command.sh
+# shellcheck source=../../bash-lib/lib/bashlib-echo.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-ssh.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-ssh.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-command.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-command.sh"
 
 # Synopsis for doc
 if [ "${1:-}" == "synopsis" ]; then
