@@ -147,34 +147,21 @@ list_command(){
       else
         echo "No file system keys found"
       fi
+      echo
       # SSH_X_AGENT_RUN_STATE
       SSH_X_AGENT_RUN_STATE=$(ssh::agent_state)
-      SSH_X_AGENT_STATE_NAME=""
-      case $SSH_X_AGENT_RUN_STATE in
-        0)
-          SSH_X_AGENT_STATE_NAME="Agent running with key"
-          ;;
-        1)
-          SSH_X_AGENT_STATE_NAME="Agent running without key"
-          ;;
-        2)
-          SSH_X_AGENT_STATE_NAME="Agent not running"
-          ;;
-        *)
-          SSH_X_AGENT_STATE_NAME="$SSH_X_AGENT_RUN_STATE is an Unknown State"
-      esac
+      SSH_X_AGENT_RUN_STATE_NAME=$(ssh::agent_state_human)
       # Agent
       echo "Agent"
       echo "----------------"
-      echo "Agent State: $SSH_X_AGENT_STATE_NAME"
-      echo
+      echo "Agent State: $SSH_X_AGENT_RUN_STATE_NAME"
       if [ "$SSH_X_AGENT_RUN_STATE" == 0 ]; then
         # Agent
         echo "Agent Keys":
         echo
         if OUTPUT=$(ssh-add -l); then
           # shellcheck disable=SC2001
-          echo -e "Public Key Fingerprint Listing of loaded Private Keys:\n$OUTPUT\n" | string::add_marge
+          echo -e "Public Key Fingerprints of loaded Private Keys:\n$OUTPUT\n" | string::add_marge
           echo
         else
           echo "No agent keys found"

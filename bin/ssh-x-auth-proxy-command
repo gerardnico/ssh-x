@@ -88,10 +88,7 @@ if [[ $TYPE =~ "public key" ]]; then
             fi
             echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $SSH_X_LIFE seconds"
 
-            export SSH_ASKPASS_REQUIRE=require
-            export SSH_ASKPASS=ssh-x-askpass
-
-            command::echo_debug_eval "ssh-add -t $SSH_X_LIFE $PRIVATE_KEY  1>$ECHO_FD 2>&1"
+            command::echo_debug_eval "SSH_ASKPASS_REQUIRE=require SSH_ASKPASS=ssh-x-askpass-prompt ssh-add -t $SSH_X_LIFE $PRIVATE_KEY  1>$ECHO_FD 2>&1"
             ;;
         *)
           echo::err "The SSH_X_KEY_STORE value ($SSH_X_KEY_STORE) is not supported. It should be 'file' or 'pass'"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+if [ "${SSH_X_PASSPHRASE:-}" == "" ]; then
+  echo -e "The SSH_X_PASSPHRASE env is empty"
+  exit 1
+fi
+# A new line at the end is  mandatory
+printf "%s\n" "${SSH_X_PASSPHRASE}"

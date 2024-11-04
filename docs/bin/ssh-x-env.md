@@ -20,7 +20,7 @@ ${SYNOPSIS}
 * [SSH_AUTH_SOCK](https://man.openbsd.org/ssh.1#SSH_AUTH_SOCK): The location of the agent socket Default to `$HOME/.ssh/agent.sock`
 * [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) to set how to retrieve the password without a terminal.
   * Default to [ssh-askpass](https://man.openbsd.org/ssh-askpass.1) if present 
-  * otherwise, we prompt with [ssh-x-askpass-prompt](ssh-x-askpass)
+  * otherwise, we prompt with [ssh-x-askpass-prompt](ssh-x-askpass-prompt)
 * [SSH_ASKPASS_REQUIRE](https://man.openbsd.org/ssh.1#SSH_ASKPASS_REQUIRE)
 
 If ssh does not have a terminal associated with it but DISPLAY and SSH_ASKPASS
@@ -32,11 +32,12 @@ and open an X11 window to read the passphrase.
 * `SSH_X_KEY_STORE`: the name of the [key store](#key-store) that contains the private key. Possible values:
     * `file`: (default) for the file system
     * `pass`: for the [pass password manager](https://www.passwordstore.org/)
-* `SSH_X_KEY_HOME`: a path to the directory containing your private keys. Default to:
-    * `~/.ssh` for a [file key store](#key-store)
-    * `ssh` for the [pass key store](#key-store)
+  * `SSH_X_KEY_HOME`: a path to the directory containing your private keys. Default to:
+      * `~/.ssh` for a [file key store](#key-store)
+      * `ssh` for the [pass key store](#key-store)
 * `SSH_X_LIFE`: the default lifetime of the loaded keys (Default to `15m`) Used if a time interval is not found in the `AddKeysToAgent` conf.
 * `SSH_X_AGENT_ENV`: The location of the agent env file. Default to `$HOME/.ssh/ssh-x-agent.env`
+* `SSH_X_KEY_PASSPHRASE_xxx`: The passphrase for a protected key to be loaded when the agent starts.
 
 ## Key Store
 

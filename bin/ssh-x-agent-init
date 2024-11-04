@@ -15,11 +15,65 @@ source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-ssh.sh"
 
 synopsis(){
 
-  cat << 'EOF'
-```bash
-ssh-x agent init
-```
+  cat << EOF
+\`\`\`bash
+$(basename $0)
+\`\`\`
 EOF
+
+}
+
+# @description
+#   This function will load keys that are:
+#   * non-protected
+#   * protected where the passphrase is defined by env variables
+#
+#   **How it works?**
+#
+#   The function will loop through the environment variables with the `SSH_KEY_PASSPHRASE` prefix.
+#
+#   When it finds an env such as `SSH_X_KEY_PASSPHRASE_MY_KEY`, the function will:
+#	    * try to find a file at `~/.ssh/my_key`
+#	    * add it with the value of `SSH_X_KEY_PASSPHRASE_MY_KEY` as passphrase
+#
+add_keys(){
+
+  # add default non-protected keys from ~/.ssh
+  ssh-add || echo::info "No non-protected keys found and added to agent"
+
+	# Loop through the SSH_X_KEY_PASSPHRASE environment variables
+	# and add the key to the agent
+	# Example:
+	# With the env `SSH_X_KEY_PASSPHRASE_MY_KEY` the script below will:
+	# * try to find a file at `~/.ssh/my_key`
+	# * add it with the value of `SSH_X_KEY_PASSPHRASE_MY_KEY` as passphrase
+	#
+	SSH_VAR_PREFIX='SSH_X_KEY_PASSPHRASE_'
+	for var in $(printenv | grep -oP "^$SSH_VAR_PREFIX\K[^=]+")
+	do
+	  filename=$(echo "$var" | tr '[:upper:]' '[:lower:]')
+	  fullVariableName="$SSH_VAR_PREFIX$var"
+	  filePath="${SSH_X_KEY_HOME}/.ssh/$filename"
+	  echo::info "The SSH env variable $fullVariableName was found"
+	  if [ -f "$filePath" ]; then
+      echo::info "Trying to add the key $filename to the SSH agent"
+      # The instruction is in the man page. SSH_ASKPASS needs a path to an executable
+      # that emits the secret to stdout.
+      # See doc: https://man.archlinux.org/man/ssh.1.en#SSH_ASKPASS
+      SSH_ASKPASS="$HOME/.ssh/askpass.sh"
+      SSH_X_PASSPHRASE=$(eval "echo \$$SSH_VAR_PREFIX$var")
+      TIMEOUT=5
+      echo "  - Executing ssh-add (if the passphrase is incorrect, the execution will freeze for ${TIMEOUT} sec)"
+      # freeze due to SSH_ASKPASS_REQUIRE=force otherwise it will ask it at the terminal
+      BAD_PASSPHRASE_RESULT="Bad passphrase"
+      result=$(timeout $TIMEOUT bash -c "DISPLAY=:0 SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=ssh-askpass-env SSH_X_PASSPHRASE=$SSH_X_PASSPHRASE ssh-add -t $SSH_X_LIFE $filePath" 2>&1 || echo "$BAD_PASSPHRASE_RESULT")
+      echo::info "  - $result" # should be `Identity added:xxx`
+      [ "$result" == "$BAD_PASSPHRASE_RESULT" ] && exit 1;
+	  else
+      echo::info "The env variable $fullVariableName designs a key file ($filePath) that does not exist" >&2
+      exit 1;
+	  fi
+	done
 
 }
 
@@ -77,10 +131,10 @@ if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_X_AGENT_RUN_STATE" = 2 ]; then
   fi
   echo::info "Starting Agent"
   agent_start "$SSH_X_AGENT_ENV" "$SSH_AUTH_SOCK"
-  ssh::add_keys
+  add_keys
 elif [ "$SSH_AUTH_SOCK" ] && [ "$SSH_X_AGENT_RUN_STATE" = 1 ]; then
-  echo Agent not started but empty
-  ssh::add_keys
+  echo::info "Agent not started but empty"
+  add_keys
 fi
 
 cat "$SSH_X_AGENT_ENV"
