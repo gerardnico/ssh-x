@@ -1,24 +1,29 @@
 #!/usr/bin/env bash
 
 set -Eeuo pipefail
-source bashlib-echo.sh
-source bashlib-crypto.sh
-source bashlib-doc.sh
-source bashlib-error.sh
+# shellcheck source=../../bash-lib/lib/bashlib-error.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
 error::set_trap
+# shellcheck source=../../bash-lib/lib/bashlib-echo.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-doc.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-doc.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-crypto.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-crypto.sh"
+
 
 # The synopsis function is required by the doc::help
 synopsis(){
 
-  cat << 'EOF'
-```bash
-sshx key passphrase command file
-```
+  cat << EOF
+\`\`\`bash
+$(basename $0) command file
+\`\`\`
 
 where `command` can be:
 
-* `delete`      - Delete the passphrase
-* `set`         - Set a passphrase
+* \`delete\`      - Delete the passphrase
+* \`set\`         - Set a passphrase
 
 EOF
 

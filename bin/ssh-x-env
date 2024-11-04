@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 
 set -Eeuo pipefail
+# shellcheck source=../..//bash-lib/lib/bashlib-error.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
 source bashlib-error.sh
 error::set_trap
-source bashlib-echo.sh
-source bashlib-command.sh
+# shellcheck source=../..//bash-lib/lib/bashlib-echo.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
+# shellcheck source=../..//bash-lib/lib/bashlib-command.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-command.sh"
 
 if [ "${1:-}" == "synopsis" ]; then
     cat << 'EOF'
-Print the env for SSH. You would use it in your script to set the SSH environment.
+Print the env for `SSH` and `SSH-X`. It's used in the `ssh-x` scripts to set the environment.
 ```bash
 eval $(ssh-x-env)
 ```

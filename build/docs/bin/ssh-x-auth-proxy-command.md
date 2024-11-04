@@ -12,22 +12,29 @@ if you use a public key as identity.
 
 ### Load a private key stored on the file system for one Host
 
+With the example below, `ssh-x-auth-proxy-command` will:
+* check if the private key of the public key `~/.ssh/id_git_github.pub` is present (ie loaded in the agent)
+* if not, it will add the private key located at `~/.ssh/id_git_github` with a lifetime of `15 minutes`
+* if the key is protected, it will ask for the passphrase
+
 With this `~/.ssh/conf` configuration
 ```conf
 Host github.com
     # Public key as identity
     IdentityFile ~/.ssh/id_git_github.pub
     # Proxy command
-    ProxyCommand ssh-x-auth-proxy-command %h %n %p %r
+    ProxyCommand env BASHLIB_LIBRARY_PATH=/path/to/bash-lib/lib /path/to/ssh-x-auth-proxy-command %h %n %p %r
     # Lifetime
     AddKeysToAgent 15m
     # Generally needed (ie don't try to use ssh-agent identity/keys)
     IdentitiesOnly yes
 ```
-`ssh-x-auth-proxy-command` will:
-* check if the private key of the public key `~/.ssh/id_git_github.pub` is present (ie loaded in the agent)
-* if not, it will add the private key located at `~/.ssh/id_git_github` with a lifetime of `15 minutes`
-* if the key is protected, it will ask for the passphrase
+where:
+
+Note that `env BASHLIB_LIBRARY_PATH=/path/to/bash-lib/lib` set the library location of [bash lib](https://github.com/gerardnico/bash-lib) 
+and is mandatory for editor as they don't take any Shell environment variable.
+
+
 
 ### Load a private key stored in the pass password manager store 
 
@@ -36,7 +43,7 @@ but with the [pass manager as key store](ssh-x-env#key-store)
 
 Change the [key store](ssh-x-env#key-store) to `pass` by setting the following environment variable in your `.bashrc`
 ```bash
-export SSHX_KEY_STORE=pass
+export SSH_X_KEY_STORE=pass
 ```
 With this environment, `ssh-x-auth-proxy-command` will:
 * check if the private key of the public key `~/.ssh/id_git_github.pub` is present (ie loaded in the agent)
@@ -63,7 +70,7 @@ Host *
     # Public key as identity
     IdentityFile ~/.ssh/id_%r_%h.pub
     # Proxy command
-    ProxyCommand ssh-x-auth-proxy-command %h %n %p %r
+    ProxyCommand env BASHLIB_LIBRARY_PATH=/path/to/bash-lib/lib /path/to/ssh-x-auth-proxy-command %h %n %p %r
     # Lifetime
     AddKeysToAgent 30m
     # Generally needed (ie don't try to use ssh-agent identity/keys)
@@ -90,10 +97,13 @@ You use it in the [ProxyCommand](https://man.openbsd.org/ssh_config#ProxyCommand
 ```conf
 Host *
     # Proxy command
-    ProxyCommand ssh-x-auth-proxy-command %h %n %p %r
+    ProxyCommand env BASHLIB_LIBRARY_PATH=/path/to/bash-lib/lib /path/to/ssh-x-auth-proxy-command %h %n %p %r
     # Your identity file should be a Public Key
     IdentityFile ~/.ssh/id_git_github.pub
 ```
+
+Note that `env BASHLIB_LIBRARY_PATH=/path/to/bash-lib/lib` set the library location of [bash lib](https://github.com/gerardnico/bash-lib)
+and is mandatory for editor as they don't take over any Shell environment variable.
 
 ## Prerequisites
 

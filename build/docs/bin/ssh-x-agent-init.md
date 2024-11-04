@@ -9,27 +9,44 @@
 * and [load keys](#key-loading) protected or not
 
 
-## EXAMPLE / USAGE
 
-This is used in your `.bashrc` or env loading script
+# USAGE: Start only one agent instance
 
-2 env variables are needed.
-* The location of the env file `SSHX_ENV`
-* The location of the agent socket file `SSH_AUTH_SOCK`
 
-For the key usage, see the [add_keys function](#key-loading)
+This script is a wrapper around `ssh-agent -a`
+```bash
+# in place of
+eval $(ssh-agent -a)
+# you would use
+eval $(ssh-agent-init)
+```
+
+You would place this script in a start script such as `.bashrc`.
+
+# USAGE: Add your key
+
+To load the protected key `id_my_key` automatically
+with the passphrase `secret`
 
 
 ```bash
-export SSHX_ENV="/home/admin"/.ssh/ssh-x-agent.env
-export SSH_AUTH_SOCK="/home/admin"/.ssh/agent.sock
-export SSH_KEY_PASSPHRASE_MY_KEY=secret
-ssh-x-agent-init
+export SSH_KEY_PASSPHRASE_ID_MY_KEY=secret
+eval $(ssh-agent-init)
 ```
+
+For a detailed explanation on how it works, see the [key loading section](#key-loading)
+
+In `Windows System Linux (WSL)`, you need to add the env to the `WSLENV`
+```
+WSLENV=SSH_KEY_PASSPHRASE_ID_MY_KEY
+```
+
 
 ## SYNOPSIS
 
-
+```bash
+ssh-x agent init
+```
 
 ## KEY LOADING
 

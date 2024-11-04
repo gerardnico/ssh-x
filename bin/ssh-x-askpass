@@ -5,10 +5,14 @@
 # Example: export SSH_ASKPASS=ssh-x-askpass-prompt
 
 set -Eeuo pipefail
+# shellcheck source=../..//bash-lib/lib/bashlib-error.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
 source bashlib-error.sh
 error::set_trap
-source bashlib-echo.sh
-source bashlib-command.sh
+# shellcheck source=../..//bash-lib/lib/bashlib-echo.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
+# shellcheck source=../..//bash-lib/lib/bashlib-command.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-command.sh"
 
 # The 1 parameter got Enter passphrase for key xxx
 # The key can be extracted with the below command

@@ -9,10 +9,10 @@
 ## SYNOPSIS
 
 ```bash
-sshx key passphrase command file
+ssh-x-key-passphrase command file
 ```
 
-where `command` can be:
+where  can be:
 
 * `delete`      - Delete the passphrase
 * `set`         - Set a passphrase

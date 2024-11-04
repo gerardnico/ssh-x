@@ -1,14 +1,21 @@
 #!/usr/bin/env bash
 
 set -Eeuo pipefail
-source bashlib-echo.sh
-source bashlib-doc.sh
-source bashlib-crypto.sh
-source bashlib-ssh.sh
-source bashlib-command.sh
-source bashlib-error.sh
-source bashlib-array.sh
+# shellcheck source=../../bash-lib/lib/bashlib-error.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
 error::set_trap
+# shellcheck source=../../bash-lib/lib/bashlib-echo.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-ssh.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-ssh.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-command.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-command.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-doc.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-doc.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-crypto.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-crypto.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-array.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-array.sh"
 
 
 synopsis_comment(){

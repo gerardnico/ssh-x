@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
 set -Eeuo pipefail
+# shellcheck source=./bashlib-error.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
 source bashlib-error.sh
 error::set_trap
-source bashlib-echo.sh
-source bashlib-doc.sh
-source bashlib-ssh.sh
+# shellcheck source=./bashlib-echo.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
+# shellcheck source=./bashlib-doc.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-doc.sh"
+# shellcheck source=./bashlib-ssh.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-ssh.sh"
 
 
 synopsis(){
@@ -38,15 +43,20 @@ EOF
 agent_start () {
 	local ENV="${1:-SSH_X_AGENT_ENV}"
 	local SOCK="${2:-$SSH_AUTH_SOCK}"
-  echo "Starting the ssh-agent with"
-  echo "  * env file  at $ENV"
-  echo "  * sock file at $SSH_AUTH_SOCK"
-  echo "  * a default lifetime of $SSH_X_LIFE"
+  echo::info "Starting the ssh-agent with"
+  echo::info "  * env file  at $ENV"
+  echo::info "  * sock file at $SSH_AUTH_SOCK"
+  echo::info "  * a default lifetime of $SSH_X_LIFE"
   (umask 077; ssh-agent -a "$SOCK" -t "$SSH_X_LIFE" >| "$ENV")
   # shellcheck disable=SC1090
   source "$ENV" >| /dev/null ;
 }
 
+# Doc
+if [ "${1:-}" == "synopsis" ]; then
+  synopsis
+  exit
+fi
 
 # Load the env
 eval "$(ssh-x-env)"
@@ -58,14 +68,14 @@ ssh::agent_load_env "$SSH_X_AGENT_ENV"
 # Get the state
 SSH_X_AGENT_RUN_STATE=$(ssh::agent_state)
 if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_X_AGENT_RUN_STATE" = 2 ]; then
-  echo "Agent not started"
+  echo::info "Agent not started"
   # The sock may be a symlink, so -e check that
   # -f check only if it's a regular file
   if [ -e "$SSH_AUTH_SOCK" ]; then
-    echo "Deleting Sock file $SSH_AUTH_SOCK"
+    echo::info "Deleting Sock file $SSH_AUTH_SOCK"
     rm "$SSH_AUTH_SOCK"
   fi
-  echo "Starting Agent"
+  echo::info "Starting Agent"
   agent_start "$SSH_X_AGENT_ENV" "$SSH_AUTH_SOCK"
   ssh::add_keys
 elif [ "$SSH_AUTH_SOCK" ] && [ "$SSH_X_AGENT_RUN_STATE" = 1 ]; then
@@ -75,8 +85,5 @@ fi
 
 cat "$SSH_X_AGENT_ENV"
 unset SSH_X_AGENT_ENV
-
-
-
 
 

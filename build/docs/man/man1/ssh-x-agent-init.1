@@ -20,25 +20,49 @@
 .PP
 \f[V]ssh-x-agent-init\f[R]: * start only one SSH agent instance (by
 default SSH starts an agent by session) * and load keys protected or not
-.SS EXAMPLE / USAGE
+.SH USAGE: Start only one agent instance
 .PP
-This is used in your \f[V].bashrc\f[R] or env loading script
-.PP
-2 env variables are needed.
-* The location of the env file \f[V]SSHX_ENV\f[R] * The location of the
-agent socket file \f[V]SSH_AUTH_SOCK\f[R]
-.PP
-For the key usage, see the add_keys function
+This script is a wrapper around \f[V]ssh-agent -a\f[R]
 .IP
 .nf
 \f[C]
-export SSHX_ENV=\[dq]/home/admin\[dq]/.ssh/ssh-x-agent.env
-export SSH_AUTH_SOCK=\[dq]/home/admin\[dq]/.ssh/agent.sock
-export SSH_KEY_PASSPHRASE_MY_KEY=secret
-ssh-x-agent-init
+# in place of
+eval $(ssh-agent -a)
+# you would use
+eval $(ssh-agent-init)
+\f[R]
+.fi
+.PP
+You would place this script in a start script such as \f[V].bashrc\f[R].
+.SH USAGE: Add your key
+.PP
+To load the protected key \f[V]id_my_key\f[R] automatically with the
+passphrase \f[V]secret\f[R]
+.IP
+.nf
+\f[C]
+export SSH_KEY_PASSPHRASE_ID_MY_KEY=secret
+eval $(ssh-agent-init)
+\f[R]
+.fi
+.PP
+For a detailed explanation on how it works, see the key loading section
+.PP
+In \f[V]Windows System Linux (WSL)\f[R], you need to add the env to the
+\f[V]WSLENV\f[R]
+.IP
+.nf
+\f[C]
+WSLENV=SSH_KEY_PASSPHRASE_ID_MY_KEY
 \f[R]
 .fi
 .SS SYNOPSIS
+.IP
+.nf
+\f[C]
+ssh-x agent init
+\f[R]
+.fi
 .SS KEY LOADING
 .PP
 This command will load keys that are: * non-protected * protected where

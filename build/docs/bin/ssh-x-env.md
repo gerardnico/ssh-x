@@ -8,7 +8,7 @@
 
 ## SYNOPSIS
 
-Print the env for SSH. You would use it in your script to set the SSH environment.
+Print the env for `SSH` and `SSH-X`. It's used in the `ssh-x` scripts to set the environment.
 ```bash
 eval $(ssh-x-env)
 ```
