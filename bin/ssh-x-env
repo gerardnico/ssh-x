@@ -25,6 +25,10 @@ SSH_AUTH_SOCK=${SSH_AUTH_SOCK:-"$HOME/.ssh/agent.sock"}
 echo "# SSH_AUTH_SOCK: The location of the agent socket"
 echo "export SSH_AUTH_SOCK=$SSH_AUTH_SOCK"$'\n'
 
+# SSH_AGENT_PID
+echo "# SSH_AGENT_PID: The process id of the agent"
+echo "# SSH_AGENT_PID=${SSH_AGENT_PID:-""}"
+
 # SSH_ASKPASS
 SSH_ASKPASS=${SSH_ASKPASS:-}
 echo "# SSH_ASKPASS: The prompting pass program"

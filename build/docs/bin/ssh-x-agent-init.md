@@ -45,7 +45,7 @@ WSLENV=SSH_KEY_PASSPHRASE_ID_MY_KEY
 ## SYNOPSIS
 
 ```bash
-ssh-x agent init
+ssh-x-agent-init
 ```
 
 ## KEY LOADING

@@ -23,10 +23,16 @@
 .IP
 .nf
 \f[C]
-ssh-x agent command options
+ssh-x-agent command options
 \f[R]
 .fi
 .PP
 where \f[V]command\f[R] can be:
 .IP \[bu] 2
-\f[V]init\f[R] - Start one agent by computer (not one by session)
+\f[V]init\f[R] - Start one agent by computer (not one by session) and
+return env statement.
+.IP \[bu] 2
+\f[V]kill\f[R] - Stop the agent process (given by
+\f[V]SSH_AGENT_PID\f[R] or any ssh-agent process).
+.IP \[bu] 2
+\f[V]state\f[R] - State of the agent

@@ -55,24 +55,23 @@ add_keys(){
 	  KEY_VARIABLE_NAME="$SSH_VAR_PREFIX$SSH_X_KEY_VARS"
 	  KEY_FILE_PATH="${SSH_X_KEY_HOME}/$KEY_FILENAME"
 	  echo::info "The SSH env variable $KEY_VARIABLE_NAME was found"
-	  if [ -f "$KEY_FILE_PATH" ]; then
-      echo::info "Trying to add the key $KEY_FILENAME to the SSH agent"
-      # The instruction is in the man page. SSH_ASKPASS needs a path to an executable
-      # that emits the secret to stdout.
-      # See doc: https://man.archlinux.org/man/ssh.1.en#SSH_ASKPASS
-      SSH_ASKPASS="$HOME/.ssh/askpass.sh"
-      SSH_X_PASSPHRASE=$(eval "echo \$$SSH_VAR_PREFIX$SSH_X_KEY_VARS")
-      TIMEOUT=5
-      echo "  - Executing ssh-add (if the passphrase is incorrect, the execution will freeze for ${TIMEOUT} sec)"
-      # freeze due to SSH_ASKPASS_REQUIRE=force otherwise it will ask it at the terminal
-      BAD_PASSPHRASE_RESULT="Bad passphrase"
-      result=$(timeout $TIMEOUT bash -c "DISPLAY=:0 SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=ssh-askpass-env SSH_X_PASSPHRASE=$SSH_X_PASSPHRASE ssh-add -t $SSH_X_LIFE $KEY_FILE_PATH" 2>&1 || echo "$BAD_PASSPHRASE_RESULT")
-      echo::info "  - $result" # should be `Identity added:xxx`
-      [ "$result" == "$BAD_PASSPHRASE_RESULT" ] && exit 1;
-	  else
-      echo::info "The env variable $KEY_VARIABLE_NAME designs a key file ($KEY_FILE_PATH) that does not exist" >&2
-      exit 1;
+	  if [ ! -f "$KEY_FILE_PATH" ]; then
+	    echo::info "The env variable $KEY_VARIABLE_NAME designs a key file ($KEY_FILE_PATH) that does not exist" >&2
+      continue
 	  fi
+    echo::info "Trying to add the key $KEY_FILENAME to the SSH agent"
+    # The instruction is in the man page. SSH_ASKPASS needs a path to an executable
+    # that emits the secret to stdout.
+    # See doc: https://man.archlinux.org/man/ssh.1.en#SSH_ASKPASS
+    SSH_X_PASSPHRASE=$(eval "echo \$$SSH_VAR_PREFIX$SSH_X_KEY_VARS")
+    TIMEOUT=5
+    echo::info "  - Executing ssh-add (if the passphrase is incorrect, the execution will freeze for ${TIMEOUT} sec)"
+    # freeze due to SSH_ASKPASS_REQUIRE=force otherwise it will ask it at the terminal
+    if ! RESULT=$(timeout $TIMEOUT bash -c "DISPLAY=:0 SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=ssh-x-askpass-env SSH_X_PASSPHRASE=$SSH_X_PASSPHRASE ssh-add -t $SSH_X_LIFE $KEY_FILE_PATH" 2>&1); then
+      echo "Bad Passphrase for $KEY_FILENAME"
+      continue
+    fi
+    echo::info "  - $RESULT" # should be `Identity added:xxx`
 	done
 
 }
@@ -102,8 +101,6 @@ agent_start () {
   echo::info "  * sock file at $SSH_AUTH_SOCK"
   echo::info "  * a default lifetime of $SSH_X_LIFE"
   (umask 077; ssh-agent -a "$SOCK" -t "$SSH_X_LIFE" >| "$ENV")
-  # shellcheck disable=SC1090
-  source "$ENV" >| /dev/null ;
 }
 
 # Doc
@@ -114,7 +111,6 @@ fi
 
 # Load the env
 eval "$(ssh-x-env)"
-
 
 # Load the env if available
 ssh::agent_load_env "$SSH_X_AGENT_ENV"
@@ -131,13 +127,11 @@ if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_X_AGENT_RUN_STATE" = 2 ]; then
   fi
   echo::info "Starting Agent"
   agent_start "$SSH_X_AGENT_ENV" "$SSH_AUTH_SOCK"
-  add_keys
+  #add_keys
 elif [ "$SSH_AUTH_SOCK" ] && [ "$SSH_X_AGENT_RUN_STATE" = 1 ]; then
-  echo::info "Agent not started but empty"
-  add_keys
+  echo::info "Agent started but empty, trying to add keys"
+  #add_keys
 fi
 
+# Output the export script
 cat "$SSH_X_AGENT_ENV"
-unset SSH_X_AGENT_ENV
-
-

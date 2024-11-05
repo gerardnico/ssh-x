@@ -1,0 +1,17 @@
+% ssh-x-askpass-prompt (1) Version Latest | A read SSH_ASKPASS utility
+
+
+# NAME
+
+`ssh-x-askpass-prompt` is an [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) utility to get a secret via a user prompt.
+
+
+# SYNOPSIS
+
+```bash
+ssh-x-askpass-prompt <Prompt Label>
+```
+
+# USED BY
+
+It's used by [ssh-x-auth-proxy-command](ssh-x-auth-proxy-command.md)

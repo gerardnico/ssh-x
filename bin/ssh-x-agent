@@ -24,6 +24,7 @@ $(basename "$0") command options
 where \`command\` can be:
 
 * \`init\`  - Start one agent by computer (not one by session) and return env statement.
+* \`kill\`  - Stop the agent process (given by \`SSH_AGENT_PID\` or any ssh-agent process).
 * \`state\` - State of the agent
 
 EOF
@@ -56,6 +57,9 @@ case "$COMMAND" in
     ;;
   "synopsis")
     synopsis
+    ;;
+  "kill")
+    ssh::agent_kill || error::exit $?
     ;;
   "state")
     echo $(ssh::agent_state_human)
