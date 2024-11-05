@@ -13,19 +13,6 @@ ${SYNOPSIS}
 
 ## ENV
 
-### SSH
-
-`ssh-x-env` prints also [ssh env](https://man.openbsd.org/ssh.1#ENVIRONMENT)
-
-* [SSH_AUTH_SOCK](https://man.openbsd.org/ssh.1#SSH_AUTH_SOCK): The location of the agent socket Default to `$HOME/.ssh/agent.sock`
-* [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) to set how to retrieve the password without a terminal.
-  * Default to [ssh-askpass](https://man.openbsd.org/ssh-askpass.1) if present 
-  * otherwise, we prompt with [ssh-x-askpass-prompt](ssh-x-askpass-prompt)
-* [SSH_ASKPASS_REQUIRE](https://man.openbsd.org/ssh.1#SSH_ASKPASS_REQUIRE)
-
-If ssh does not have a terminal associated with it but DISPLAY and SSH_ASKPASS
-are set, it will execute the program specified by SSH_ASKPASS
-and open an X11 window to read the passphrase.
 
 ### SSH-X
 
@@ -33,11 +20,23 @@ and open an X11 window to read the passphrase.
     * `file`: (default) for the file system
     * `pass`: for the [pass password manager](https://www.passwordstore.org/)
   * `SSH_X_KEY_HOME`: a path to the directory containing your private keys. Default to:
-      * `~/.ssh` for a [file key store](#key-store)
-      * `ssh` for the [pass key store](#key-store)
+      * the absolute path `$HOME/.ssh`: for the [file key store](#key-store):  
+      * the relative path `ssh-x` for the [pass key store](#key-store). This path:
+        * relative to [PASSWORD_STORE_DIR](https://man.archlinux.org/man/extra/pass/pass.1.en#PASSWORD_STORE_DIR)
+        * should not be start with a point. Otherwise, pass will not see it
 * `SSH_X_LIFE`: the default lifetime of the loaded keys (Default to `15m`) Used if a time interval is not found in the `AddKeysToAgent` conf.
 * `SSH_X_AGENT_ENV`: The location of the agent env file. Default to `$HOME/.ssh/ssh-x-agent.env`
-* `SSH_X_KEY_PASSPHRASE_xxx`: The passphrase for a protected key to be loaded when the agent starts.
+* `SSH_X_KEY_PASSPHRASE_xxx`: The passphrase for a protected key to be loaded when the agent starts. See [ssh-x-agent-init](ssh-x-agent-init.md)
+
+### SSH
+
+This utility prints also [ssh env](https://man.openbsd.org/ssh.1#ENVIRONMENT)
+
+* [SSH_AUTH_SOCK](https://man.openbsd.org/ssh.1#SSH_AUTH_SOCK): The location of the agent socket Default to `$HOME/.ssh/agent.sock`
+* [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) to set how to retrieve the password without a terminal. `ssh-x` has 2:
+  * [ssh-x-askpass-env](ssh-x-askpass-env.md) used to pass the password from a secret store
+  * [ssh-x-askpass-prompt](ssh-x-askpass-prompt.md) used to prompt the user for the secret
+* [SSH_ASKPASS_REQUIRE](https://man.openbsd.org/ssh.1#SSH_ASKPASS_REQUIRE) used to require `SSH_ASKPASS` behavior
 
 ## Key Store
 

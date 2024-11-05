@@ -3,7 +3,7 @@
 
 # NAME
 
-`ssh-x-askpass-read` is an [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) utility to get a secret from the user via the `read` utility
+`ssh-x-askpass-prompt` is an [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) utility to get a secret from the user via the `read` utility
 
 
 # SYNOPSIS

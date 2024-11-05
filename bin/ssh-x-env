@@ -40,9 +40,12 @@ echo "# SSH_X_KEY_STORE: The store of the keys (file or pass)"
 echo "export SSH_X_KEY_STORE=$SSH_X_KEY_STORE"$'\n'
 
 # SSH_X_KEY_HOME
+RELATIVE_KEY_PATH=""
 case "$SSH_X_KEY_STORE" in
   "pass")
-    SSH_X_KEY_HOME=${SSH_X_KEY_HOME:-"ssh"}
+    # .ssh as relative path does not work
+    # because pass does not show them
+    SSH_X_KEY_HOME=${SSH_X_KEY_HOME:-"ssh-x"}
     ;;
   "file")
     SSH_X_KEY_HOME=${SSH_X_KEY_HOME:-"$HOME/.ssh"}

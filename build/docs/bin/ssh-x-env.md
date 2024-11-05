@@ -22,8 +22,8 @@ eval $(ssh-x-env)
 
 * [SSH_AUTH_SOCK](https://man.openbsd.org/ssh.1#SSH_AUTH_SOCK): The location of the agent socket Default to `/home/admin/.ssh/agent.sock`
 * [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) to set how to retrieve the password without a terminal.
-  * Default to [ssh-askpass](https://man.openbsd.org/ssh-askpass.1) if present 
-  * otherwise, we prompt with [ssh-x-askpass-prompt](ssh-x-askpass)
+  * [ssh-askpass-env]() if present 
+  * [ssh-x-askpass-prompt](ssh-x-askpass.md)
 * [SSH_ASKPASS_REQUIRE](https://man.openbsd.org/ssh.1#SSH_ASKPASS_REQUIRE)
 
 If ssh does not have a terminal associated with it but DISPLAY and SSH_ASKPASS
