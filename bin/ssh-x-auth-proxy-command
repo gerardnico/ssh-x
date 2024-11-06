@@ -72,7 +72,13 @@ if [[ $TYPE =~ "public key" ]]; then
       PRIVATE_KEY="$SSH_X_KEY_HOME/$(basename "$KEY" | sed 's/.pub//')"
       case "$SSH_X_KEY_STORE" in
         "pass")
-
+            PASS_FILE="${PASSWORD_STORE_DIR:-"$HOME~/.password-store"}/$PRIVATE_KEY.gpg"
+            if [ ! -f "$PASS_FILE" ]; then
+              echo::err "The pass private key ($PRIVATE_KEY) does not exist"
+              exit 1
+            fi
+            echo::info "Adding Pass Private Key ($PRIVATE_KEY) to agent for a lifetime of $SSH_X_LIFE seconds"
+            SSH_ASKPASS_REQUIRE=require SSH_ASKPASS=ssh-x-askpass-prompt  ssh-add -t $SSH_X_LIFE <(pass $PRIVATE_KEY) 1>$ECHO_FD 2>&1
         ;;
         "file")
             if [ ! -f "$PRIVATE_KEY" ]; then
