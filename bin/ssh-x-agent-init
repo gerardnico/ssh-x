@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Start an agent for the whole system (not one by session)
+# and add keys if available
 
 set -Eeuo pipefail
 # shellcheck source=./bashlib-error.sh
@@ -30,7 +32,7 @@ EOF
 #
 #   **How it works?**
 #
-#   The function will loop through the environment variables with the `SSH_KEY_PASSPHRASE` prefix.
+#   The function will loop through the environment variables with the `SSH_X_KEY_PASSPHRASE` prefix.
 #
 #   When it finds an env such as `SSH_X_KEY_PASSPHRASE_MY_KEY`, the function will:
 #	    * try to find a file at `~/.ssh/my_key`
@@ -127,10 +129,10 @@ if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_X_AGENT_RUN_STATE" = 2 ]; then
   fi
   echo::info "Starting Agent"
   agent_start "$SSH_X_AGENT_ENV" "$SSH_AUTH_SOCK"
-  #add_keys
+  add_keys
 elif [ "$SSH_AUTH_SOCK" ] && [ "$SSH_X_AGENT_RUN_STATE" = 1 ]; then
   echo::info "Agent started but empty, trying to add keys"
-  #add_keys
+  add_keys
 fi
 
 # Output the export script

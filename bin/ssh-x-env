@@ -9,6 +9,8 @@ error::set_trap
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
 # shellcheck source=../..//bash-lib/lib/bashlib-command.sh
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-command.sh"
+# shellcheck source=../..//bash-lib/lib/bashlib-bash.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-bash.sh"
 
 if [ "${1:-}" == "synopsis" ]; then
     cat << 'EOF'
@@ -75,3 +77,8 @@ echo "export SSH_X_AGENT_ENV=$SSH_X_AGENT_ENV"$'\n'
 echo "# SSH_X_LIFE: The life of keys in the agent"
 SSH_X_LIFE=${SSH_X_LIFE:-15m}
 echo "export SSH_X_LIFE=$SSH_X_LIFE"$'\n'
+
+# SSH_X_ASKPASS_CLI
+echo "# SSH_X_ASKPASS_CLI: The pinentry cli"
+SSH_X_ASKPASS_CLI=${SSH_X_ASKPASS_CLI:-"$(bash::get_pinentry)"}
+echo "# SSH_X_ASKPASS_CLI=$SSH_X_ASKPASS_CLI"

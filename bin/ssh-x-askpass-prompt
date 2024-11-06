@@ -11,19 +11,19 @@ source bashlib-error.sh
 error::set_trap
 # shellcheck source=../..//bash-lib/lib/bashlib-echo.sh
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
-# shellcheck source=../..//bash-lib/lib/bashlib-command.sh
-source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-command.sh"
+# shellcheck source=../..//bash-lib/lib/bashlib-bash.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-bash.sh"
 
 # The 1 parameter got Enter passphrase for key xxx
 # The key can be extracted with the below command
 # KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
 # But we let the original prompt from now
 PROMPT=${1:-}
-
 if [ "$PROMPT" == "" ]; then
   echo::err "A prompt label is expected as first argument"
 fi
 
+# Synopsis
 if [ "$PROMPT" == "synopsis" ]; then
   cat << EOF
 \`\`\`bash
@@ -34,45 +34,10 @@ EOF
 fi
 
 
-SSH_X_ASKPASS_CLI=${SSH_X_ASKPASS_CLI:-}
-if [ "$SSH_X_ASKPASS_CLI" == "" ]; then
-  if sh -c ": >/dev/tty" >/dev/null 2>/dev/null; then
-    # /dev/tty is available
-
-    # We use read with dev/tty if we can. Why?
-    # With zenity with Git, you get:
-    #   Error: Received disconnect from UNKNOWN port 65535:11: Bye Bye
-    #   Disconnected from UNKNOWN port 65535
-    #   fatal: Could not read from remote repository.
-    SSH_X_ASKPASS_CLI='read'
-  else
-   SSH_X_ASKPASS_CLI='zenity'
-  fi
-fi
-
-if [ ! "$SSH_X_ASKPASS_CLI" = "read" ] && ! command::exists "$SSH_X_ASKPASS_CLI"; then
-  echo::err "The SSH_X_ASKPASS_CLI ($SSH_X_ASKPASS_CLI) command does not exist"
+if ! SSH_X_ASKPASS_CLI=${SSH_X_ASKPASS_CLI:-"$(bash::get_pinentry)"}; then
+  echo::err "No pinentry could be found"
   exit 1
 fi
 
-case "$SSH_X_ASKPASS_CLI" in
-  "zenity")
-    if ! PASSWORD=$(zenity --password --title="$PROMPT" 2>/dev/null); then
-      echo::err "User has canceled"
-    else
-      echo "$PASSWORD"
-    fi
-    ;;
-  "whiptail")
-    whiptail --passwordbox "$1:" 8 78 3>&1 1>&2 2>&3
-    ;;
-  "read")
-    echo "$PROMPT" > /dev/tty
-    read -r -s password < /dev/tty
-    echo "$password"
-    ;;
-  *)
-    echo:err "SSH_X_ASKPASS_CLI value ($SSH_X_ASKPASS_CLI) is unknown"
-    exit 1
-    ;;
-esac
+echo::debug "SSH_X_ASKPASS_CLI=$SSH_X_ASKPASS_CLI"
+bash::get_pin "$SSH_X_ASKPASS_CLI" "$PROMPT"

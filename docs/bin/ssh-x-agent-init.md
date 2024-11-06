@@ -16,9 +16,9 @@
 This script is a wrapper around `ssh-agent -a`
 ```bash
 # in place of
-eval $(ssh-agent -a)
+eval "$(ssh-agent -a)"
 # you would use
-eval $(ssh-agent-init)
+eval "$(ssh-agent-init)"
 ```
 
 You would place this script in a start script such as `.bashrc`.
@@ -30,15 +30,16 @@ with the passphrase `secret`
 
 
 ```bash
-export SSH_KEY_PASSPHRASE_ID_MY_KEY=secret
-eval $(ssh-agent-init)
+export SSH_X_KEY_PASSPHRASE_ID_MY_KEY=secret
+eval "$(ssh-agent-init)"
 ```
 
 For a detailed explanation on how it works, see the [key loading section](#key-loading)
 
-In `Windows System Linux (WSL)`, you need to add the env to the `WSLENV`
+In `Windows System Linux (WSL)`, you need to add the env to the `WSLENV` to pass it to `WSL`
+Example:
 ```
-WSLENV=SSH_KEY_PASSPHRASE_ID_MY_KEY
+WSLENV=SSH_X_KEY_PASSPHRASE_ID_MY_KEY
 ```
 
 
@@ -54,17 +55,17 @@ This command will load keys that are:
 
 **How it works?**
 
-The function will loop through the environment variables with the `SSH_KEY_PASSPHRASE` prefix.
+The function will loop through the environment variables with the `SSH_X_KEY_PASSPHRASE` prefix.
 
 Syntax:
 ```bash
-export SSH_KEY_PASSPHRASE_KeyName=KeyPassphrase
+export SSH_X_KEY_PASSPHRASE_KeyName=KeyPassphrase
 ```
 
 Example:
-If the function finds the env `SSH_KEY_PASSPHRASE_MY_KEY`, it will:
+If the function finds the env `SSH_X_KEY_PASSPHRASE_MY_KEY`, it will:
 * load the key located at `~/.ssh/my_key`
-* add it with the value of `SSH_KEY_PASSPHRASE_MY_KEY` as passphrase
+* add it with the value of `SSH_X_KEY_PASSPHRASE_MY_KEY` as passphrase
 
 ## REF
 
@@ -73,5 +74,5 @@ If the function finds the env `SSH_KEY_PASSPHRASE_MY_KEY`, it will:
 
 ## ENV
 
-* `SSH_X_AGENT_ENV`: the location where the env file is saved (Default to `~/.ssh/ssh-x-agent.env`)
-* `SSH_X_KEY_HOME`: a path to the directory containing your private keys. Default to `~/.ssh`
+See [ssh-x-env](ssh-x-env.md)
+
