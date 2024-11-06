@@ -47,12 +47,13 @@ export SSH_X_KEY_STORE=pass
 ```
 With this environment, `ssh-x-auth-proxy-command` will:
 * check if the private key of the public key `~/.ssh/id_git_github.pub` is present (ie loaded in the agent)
-* if not, it will add the private key located at `ssh/id_git_github` with a lifetime of `15 minutes`
+* if not, it will add the private key located at `$PASSWORD_STORE_DIR/ssh-x/id_git_github` with a lifetime of `15 minutes`
 
 Because the private key is in the [pass manager](https://www.passwordstore.org/), the key
-is already protected and would have no passphrase but if this is the case, we still ask for the passphrase
+is already protected and may have no passphrase but if this is the case, we still ask for the passphrase
 
 ### How to configure for all hosts
+
 This example shows you how you can configure `ssh` to
 use `ssh-x-auth-proxy-command` for all hosts thanks to the SSH template features.
 
