@@ -9,7 +9,9 @@ the temporary environment variable `SSH_X_PASSPHRASE`
 
 # SYNOPSIS
 
-${SYNOPSIS}
+```bash
+ssh-x-askpass-env
+```
 
 # USED BY
 

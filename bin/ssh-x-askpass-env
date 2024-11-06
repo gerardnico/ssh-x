@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+
+if [ "${1:-}" == "synopsis" ]; then
+  cat << EOF
+\`\`\`bash
+$(basename "$0")
+\`\`\`
+EOF
+  exit
+fi
+
 if [ "${SSH_X_PASSPHRASE:-}" == "" ]; then
   echo -e "The SSH_X_PASSPHRASE env is empty"
   exit 1

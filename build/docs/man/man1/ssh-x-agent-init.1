@@ -27,9 +27,9 @@ This script is a wrapper around \f[V]ssh-agent -a\f[R]
 .nf
 \f[C]
 # in place of
-eval $(ssh-agent -a)
+eval \[dq]$(ssh-agent -a)\[dq]
 # you would use
-eval $(ssh-agent-init)
+eval \[dq]$(ssh-agent-init)\[dq]
 \f[R]
 .fi
 .PP
@@ -41,19 +41,19 @@ passphrase \f[V]secret\f[R]
 .IP
 .nf
 \f[C]
-export SSH_KEY_PASSPHRASE_ID_MY_KEY=secret
-eval $(ssh-agent-init)
+export SSH_X_KEY_PASSPHRASE_ID_MY_KEY=secret
+eval \[dq]$(ssh-agent-init)\[dq]
 \f[R]
 .fi
 .PP
 For a detailed explanation on how it works, see the key loading section
 .PP
 In \f[V]Windows System Linux (WSL)\f[R], you need to add the env to the
-\f[V]WSLENV\f[R]
+\f[V]WSLENV\f[R] to pass it to \f[V]WSL\f[R] Example:
 .IP
 .nf
 \f[C]
-WSLENV=SSH_KEY_PASSPHRASE_ID_MY_KEY
+WSLENV=SSH_X_KEY_PASSPHRASE_ID_MY_KEY
 \f[R]
 .fi
 .SS SYNOPSIS
@@ -71,20 +71,20 @@ the passphrase is defined by env variables
 \f[B]How it works?\f[R]
 .PP
 The function will loop through the environment variables with the
-\f[V]SSH_KEY_PASSPHRASE\f[R] prefix.
+\f[V]SSH_X_KEY_PASSPHRASE\f[R] prefix.
 .PP
 Syntax:
 .IP
 .nf
 \f[C]
-export SSH_KEY_PASSPHRASE_KeyName=KeyPassphrase
+export SSH_X_KEY_PASSPHRASE_KeyName=KeyPassphrase
 \f[R]
 .fi
 .PP
 Example: If the function finds the env
-\f[V]SSH_KEY_PASSPHRASE_MY_KEY\f[R], it will: * load the key located at
-\f[V]\[ti]/.ssh/my_key\f[R] * add it with the value of
-\f[V]SSH_KEY_PASSPHRASE_MY_KEY\f[R] as passphrase
+\f[V]SSH_X_KEY_PASSPHRASE_MY_KEY\f[R], it will: * load the key located
+at \f[V]\[ti]/.ssh/my_key\f[R] * add it with the value of
+\f[V]SSH_X_KEY_PASSPHRASE_MY_KEY\f[R] as passphrase
 .SS REF
 .IP \[bu] 2
 Idea based on
@@ -93,10 +93,5 @@ auto-launching-ssh-agent-on-git-for-windows (https://docs.github.com/en/authenti
 Project with same functionality:
 keychain (https://github.com/funtoo/keychain)
 .SS ENV
-.IP \[bu] 2
-\f[V]SSH_X_AGENT_ENV\f[R]: the location where the env file is saved
-(Default to \f[V]\[ti]/.ssh/ssh-x-agent.env\f[R])
-.IP \[bu] 2
-\f[V]SSH_X_KEY_HOME\f[R]: a path to the directory containing your
-private keys.
-Default to \f[V]\[ti]/.ssh\f[R]
+.PP
+See ssh-x-env
