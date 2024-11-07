@@ -51,7 +51,11 @@ add_keys(){
 	# * add it with the value of `SSH_X_KEY_PASSPHRASE_MY_KEY` as passphrase
 	#
 	SSH_VAR_PREFIX='SSH_X_KEY_PASSPHRASE_'
-	for SSH_X_KEY_VARS in $(printenv | grep -oP "^$SSH_VAR_PREFIX\K[^=]+")
+	if ! SSH_X_KEY_VARIABLES=$(printenv | grep -oP "^$SSH_VAR_PREFIX\K[^=]+"); then
+	  # No env found, grep returns 1
+	  return
+	fi
+	for SSH_X_KEY_VARS in $SSH_X_KEY_VARIABLES
 	do
 	  KEY_FILENAME=$(echo "$SSH_X_KEY_VARS" | tr '[:upper:]' '[:lower:]')
 	  KEY_VARIABLE_NAME="$SSH_VAR_PREFIX$SSH_X_KEY_VARS"
