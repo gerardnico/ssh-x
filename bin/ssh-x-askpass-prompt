@@ -14,10 +14,6 @@ source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
 # shellcheck source=../..//bash-lib/lib/bashlib-bash.sh
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-bash.sh"
 
-# The 1 parameter got Enter passphrase for key xxx
-# The key can be extracted with the below command
-# KEY=$(echo "$1" | sed "s/Enter passphrase for key.*'\([^']*\)'.*/\1/")
-# But we let the original prompt from now
 PROMPT=${1:-}
 if [ "$PROMPT" == "" ]; then
   echo::err "A prompt label is expected as first argument"
@@ -34,10 +30,19 @@ EOF
 fi
 
 
-if ! SSH_X_ASKPASS_CLI=${SSH_X_ASKPASS_CLI:-"$(bash::get_pinentry)"}; then
+if ! SSH_X_ASKPASS_PINENTRY=${SSH_X_ASKPASS_PINENTRY:-"$(bash::get_pinentry)"}; then
   echo::err "No pinentry could be found"
   exit 1
 fi
+echo::debug "SSH_X_ASKPASS_PINENTRY=$SSH_X_ASKPASS_PINENTRY"
 
-echo::debug "SSH_X_ASKPASS_CLI=$SSH_X_ASKPASS_CLI"
-bash::get_pin "$SSH_X_ASKPASS_CLI" "$PROMPT"
+if [ "$SSH_X_ASKPASS_PINENTRY" == "zenity" ]; then
+  # The $1 parameter got Enter passphrase for xxx
+  # The key is extracted because pinentry such as zenity have a small width
+  # and cannot be changed
+  #KEY="$(echo "$1" | sed "s/Enter passphrase for .*'\([^']*\)'.*/\1/")"
+  KEY=${1//Enter passphrase for/}
+  # The prompt is the title in zenity
+  PROMPT="$KEY"
+fi
+bash::get_pin "$SSH_X_ASKPASS_PINENTRY" "$PROMPT"

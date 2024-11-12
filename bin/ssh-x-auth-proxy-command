@@ -69,16 +69,27 @@ if [[ $TYPE =~ "public key" ]]; then
       echo::debug "Private Key is in agent"
     else
       echo::info "Private Key is not in agent"
+
+      # IDE They provided their own: SSH_ASKPASS
+      # example: Intellij:
+      # #!/bin/sh
+      # SSH_ASKPASS=/mnt/c/Users/ngera/AppData/Local/JetBrains/IntelliJIdea2024.1/tmp/intellij-ssh-askpass-wsl-Debian.sh
+      # Content
+      # export WSLENV=INTELLIJ_SSH_ASKPASS_HANDLER/w:INTELLIJ_SSH_ASKPASS_PORT/w:INTELLIJ_GIT_ASKPASS_HANDLER/w:INTELLIJ_GIT_ASKPASS_PORT/w:INTELLIJ_REBASE_HANDER_NO/w:INTELLIJ_REBASE_HANDER_PORT/w
+      #"/mnt/c/Idea/jbr/bin/java.exe" -cp "C:/Idea/lib/externalProcess-rt.jar" externalApp.nativessh.NativeSshAskPassApp "$@"
+      SSH_ASKPASS=${SSH_ASKPASS:-"ssh-x-askpass-prompt"}
+
+      # Private Key
       PRIVATE_KEY="$SSH_X_KEY_HOME/$(basename "$KEY" | sed 's/.pub//')"
       case "$SSH_X_KEY_STORE" in
         "pass")
             PASS_FILE="${PASSWORD_STORE_DIR:-"$HOME~/.password-store"}/$PRIVATE_KEY.gpg"
             if [ ! -f "$PASS_FILE" ]; then
-              echo::err "The pass private key ($PRIVATE_KEY) does not exist"
+              echo::err "The pass private key ($PASS_FILE) does not exist"
               exit 1
             fi
             echo::info "Adding Pass Private Key ($PRIVATE_KEY) to agent for a lifetime of $SSH_X_LIFE seconds"
-            SSH_ASKPASS_REQUIRE=require SSH_ASKPASS=ssh-x-askpass-prompt  ssh-add -t "$SSH_X_LIFE" <(pass "$PRIVATE_KEY") 1>"$ECHO_FD" 2>&1
+            SSH_ASKPASS_REQUIRE=require SSH_ASKPASS=$SSH_ASKPASS  ssh-add -t "$SSH_X_LIFE" <(pass "$PRIVATE_KEY") 1>"$ECHO_FD" 2>&1
         ;;
         "file")
             if [ ! -f "$PRIVATE_KEY" ]; then
@@ -94,7 +105,7 @@ if [[ $TYPE =~ "public key" ]]; then
             fi
             echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $SSH_X_LIFE seconds"
 
-            command::echo_debug_eval "SSH_ASKPASS_REQUIRE=require SSH_ASKPASS=ssh-x-askpass-prompt ssh-add -t $SSH_X_LIFE $PRIVATE_KEY  1>$ECHO_FD 2>&1"
+            command::echo_debug_eval "SSH_ASKPASS_REQUIRE=require SSH_ASKPASS=$SSH_ASKPASS ssh-add -t $SSH_X_LIFE $PRIVATE_KEY  1>$ECHO_FD 2>&1"
             ;;
         *)
           echo::err "The SSH_X_KEY_STORE value ($SSH_X_KEY_STORE) is not supported. It should be 'file' or 'pass'"
