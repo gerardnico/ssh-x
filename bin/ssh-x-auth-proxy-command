@@ -70,13 +70,14 @@ if [[ $TYPE =~ "public key" ]]; then
     else
       echo::info "Private Key is not in agent"
 
-      # IDE They provided their own: SSH_ASKPASS
-      # example: Intellij:
-      # #!/bin/sh
-      # SSH_ASKPASS=/mnt/c/Users/ngera/AppData/Local/JetBrains/IntelliJIdea2024.1/tmp/intellij-ssh-askpass-wsl-Debian.sh
-      # Content
-      # export WSLENV=INTELLIJ_SSH_ASKPASS_HANDLER/w:INTELLIJ_SSH_ASKPASS_PORT/w:INTELLIJ_GIT_ASKPASS_HANDLER/w:INTELLIJ_GIT_ASKPASS_PORT/w:INTELLIJ_REBASE_HANDER_NO/w:INTELLIJ_REBASE_HANDER_PORT/w
-      #"/mnt/c/Idea/jbr/bin/java.exe" -cp "C:/Idea/lib/externalProcess-rt.jar" externalApp.nativessh.NativeSshAskPassApp "$@"
+      # IDE provide their own SSH_ASKPASS
+      # example:
+      # Intellij env:
+      #   SSH_ASKPASS=/mnt/c/Users/ngera/AppData/Local/JetBrains/IntelliJIdea2024.1/tmp/intellij-ssh-askpass-wsl-Debian.sh
+      # Content of the file intellij-ssh-askpass-wsl-Debian.sh
+      #   #!/bin/sh
+      #   export WSLENV=INTELLIJ_SSH_ASKPASS_HANDLER/w:INTELLIJ_SSH_ASKPASS_PORT/w:INTELLIJ_GIT_ASKPASS_HANDLER/w:INTELLIJ_GIT_ASKPASS_PORT/w:INTELLIJ_REBASE_HANDER_NO/w:INTELLIJ_REBASE_HANDER_PORT/w
+      #   "/mnt/c/Idea/jbr/bin/java.exe" -cp "C:/Idea/lib/externalProcess-rt.jar" externalApp.nativessh.NativeSshAskPassApp "$@"
       SSH_ASKPASS=${SSH_ASKPASS:-"ssh-x-askpass-prompt"}
 
       # Private Key

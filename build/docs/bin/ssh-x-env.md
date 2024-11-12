@@ -44,7 +44,7 @@ This utility prints also [ssh env](https://man.openbsd.org/ssh.1#ENVIRONMENT)
 
 ## Key Store
 
-We support 2 keys store:
+With the [ssh-x-auth-proxy-command](ssh-x-auth-proxy-command.md), we support 2 keys store:
 * `file`: where the key is stored in a file system directory (default)
 * `pass`: where the key is stored in the [pass password manager](https://www.passwordstore.org/)
 

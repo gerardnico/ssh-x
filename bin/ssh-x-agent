@@ -62,7 +62,7 @@ case "$COMMAND" in
     ssh::agent_kill || error::exit $?
     ;;
   "state")
-    echo $(ssh::agent_state_human)
+    ssh::agent_state_human
     ;;
   *)
     doc::help

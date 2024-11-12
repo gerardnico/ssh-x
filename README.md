@@ -33,42 +33,55 @@ Then set the `BASHLIB_LIBRARY_PATH` in your bashrc
 export BASHLIB_LIBRARY_PATH=$(brew --prefix bashlib)/lib
 ```
 
-### WSL IDE integration
+### WSL Git IDE and SSH Agent integration
 
-If you want to use an IDE that open a WSL directory (ie use `wsl` as interface),
-you need to add extra environment to set the non-interactive environment.
+Because this library uses the linux `ssh-agent` (ie wsl), 
+it's not possible to pass the ssh-agent env (ie process id) directly with `WSLENV`.
+Git therefore does not know that there is an agent running.
 
-You should do the following on your Windows host:
-* Set the env `BASHLIB_LIBRARY_PATH` to your Windows env.
+The solution is to:
+* create a `git` wrapper at `/usr/local/sbin/git`
+* set this `git` executable as your git executable in your IDE
+
+
+Example:
 ```bash
-# example
-BASHLIB_LIBRARY_PATH=/home/linuxbrew/.linuxbrew/opt/bashlib/lib
-# The value should be the same in interactive mode (bashrc) and windows
-```
-* Add `BASHLIB_LIBRARY_PATH` to `WSLENV` to path the env to `wsl`
-```bash
-WSLENV=OTHERENV:BASHLIB_LIBRARY_PATH
+#!/usr/bin/env bash
+
+# Load ssh-agent env
+SSH_X_AGENT_ENV=$HOME/.ssh/ssh-x-agent.env
+if [ -f "$SSH_X_AGENT_ENV" ]; then
+  source "$SSH_X_AGENT_ENV" >| /dev/null
+fi
+
+# Other SSH_X_ENV or source your env file.
+export SSH_X_KEY_STORE="pass"
+
+# Then git
+/usr/bin/git "$@"
 ```
 
-You can check that it's working by executing:
-```bash
-# env test
-wsl ssh-x-env 
-```
-
-If it does not work, check that you have set your `BASHLIB_LIBRARY_PATH` env correctly.
-```bash
-wsl env | wsl grep BASHLIB_LIBRARY_PATH=
-```
-
-### WSL Git test
+Test from a Windows terminal
 ```bash
 wsl --cd /path/to/a/git/repo git fetch origin
 ```
-Conf: 
+
+Example of a console git fetch with IntelliJ and [pass as a private key store](build/docs/bin/ssh-x-env.md#key-store)
 ```bash
-git clone -c "core.sshCommand=ssh -i ~/.ssh/id_rsa_example -F /dev/null" 
-GIT_SSH_COMMAND="ssh -i ~/.ssh/id_rsa_example -o 'IdentitiesOnly yes'"
-GIT_SH=test in /etc/profile.d/git.sh
+19:30:39.727: [touch] /usr/local/sbin/git -c credential.helper= -c core.quotepath=false -c log.showSignature=false fetch origin --recurse-submodules=no --progress --prune
+```
+Output:
+```
+ssh-x-auth-proxy-command::main#71: Private Key is not in agent
+ssh-x-auth-proxy-command::main#91: Adding Pass Private Key (ssh-x/id_git_github.com) to agent for a lifetime of 15m seconds
+Identity added: /dev/fd/63 (email@email.com)
+Lifetime set to 900 seconds
 ```
 
+## Support
+
+### Permission denied (publickey)
+
+If you get this error from your IDE, this is because
+Git does not know your agent.
+See [WSL GIT IDE Integration](#wsl-git-ide-integration)

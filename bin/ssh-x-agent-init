@@ -116,7 +116,7 @@ if [ "${1:-}" == "synopsis" ]; then
 fi
 
 # Load the env
-eval "$(ssh-x-env)"
+eval "$(source ssh-x-env)"
 
 # Load the env if available
 ssh::agent_load_env "$SSH_X_AGENT_ENV"

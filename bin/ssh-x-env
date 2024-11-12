@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
+# This file is normally sourced to not execute bash again
 
-# shellcheck source=../..//bash-lib/lib/bashlib-error.sh
-source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
-error::set_strict_mode
-error::set_trap
-# shellcheck source=../..//bash-lib/lib/bashlib-echo.sh
-source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
-# shellcheck source=../..//bash-lib/lib/bashlib-command.sh
-source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-command.sh"
-# shellcheck source=../..//bash-lib/lib/bashlib-bash.sh
-source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-bash.sh"
 
 if [ "${1:-}" == "synopsis" ]; then
     cat << 'EOF'
@@ -44,8 +35,6 @@ SSH_X_KEY_STORE=${SSH_X_KEY_STORE:-file}
 echo "# SSH_X_KEY_STORE: The store of the keys (file or pass)"
 echo "export SSH_X_KEY_STORE=$SSH_X_KEY_STORE"$'\n'
 
-# SSH_X_KEY_HOME
-RELATIVE_KEY_PATH=""
 case "$SSH_X_KEY_STORE" in
   "pass")
     # .ssh as relative path does not work
@@ -76,8 +65,3 @@ echo "export SSH_X_AGENT_ENV=$SSH_X_AGENT_ENV"$'\n'
 echo "# SSH_X_LIFE: The life of keys in the agent"
 SSH_X_LIFE=${SSH_X_LIFE:-15m}
 echo "export SSH_X_LIFE=$SSH_X_LIFE"$'\n'
-
-# SSH_X_ASKPASS_CLI
-echo "# SSH_X_ASKPASS_CLI: The pinentry cli"
-SSH_X_ASKPASS_CLI=${SSH_X_ASKPASS_CLI:-"$(bash::get_pinentry)"}
-echo "# SSH_X_ASKPASS_CLI=$SSH_X_ASKPASS_CLI"
