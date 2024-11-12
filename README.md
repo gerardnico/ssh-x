@@ -78,6 +78,16 @@ Identity added: /dev/fd/63 (email@email.com)
 Lifetime set to 900 seconds
 ```
 
+### WSL IDE and Pass integration
+
+If you use [pass as a private key store](build/docs/bin/ssh-x-env.md#key-store), you need to install
+a pgp gui pinentry.
+
+Example with `pinentry-qt`.
+```bash
+sudo apt -y install pinentry-qt
+```
+
 ## Support
 
 ### Permission denied (publickey)
