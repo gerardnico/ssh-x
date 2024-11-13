@@ -61,7 +61,7 @@ ssh-x key command options
 
 where `command` can be:
 
-* `add`          - Add a private key from the agent
+* `add`          - Add a private key from the agent. This is a relatif name (ie the name of the key not the path)
 * `comment`      - Set or print the comment
 * `ls`           - List all the keys, fingerprint and permissions on the file system and agent
 * `passphrase`   - Set, delete a passphrase
@@ -223,6 +223,7 @@ remove_command(){
         shift
         ;;
       *)
+
         ssh-add -d "$1"
         shift
         ;;
@@ -247,6 +248,10 @@ fi
 # Remove the first argument from the argument list
 shift
 
+# env
+ENV=$(source ssh-x-env)
+echo::debug "$ENV"
+eval "$ENV"
 
 case "$COMMAND" in
   "passphrase")
@@ -265,8 +270,7 @@ case "$COMMAND" in
     remove_command  "$@"
     ;;
   "add")
-    # ssh-add -t 300 "$@"
-    ssh-add "$@"
+    ssh::add_key "$@"
     ;;
   "synopsis")
     synopsis;

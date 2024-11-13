@@ -47,7 +47,7 @@ echo::debug "User: $USER"
 
 
 # Env
-ENV=$(ssh-x-env)
+ENV=$(source ssh-x-env)
 echo::debug "$ENV"
 eval "$ENV"
 

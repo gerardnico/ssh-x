@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 # This file is normally sourced to not execute bash again
+# ie
+# subshell is not in the eval otherwise bash does not trap any error
+# ENV=$(source ssh-x-env)
+# echo::debug "$ENV"
+# eval "$ENV"
 
 
 if [ "${1:-}" == "synopsis" ]; then
