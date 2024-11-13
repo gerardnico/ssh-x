@@ -124,6 +124,9 @@ To add the private key `~/.ssh/id_git_github.com` into pass at `ssh/id_git_githu
 you would use this command:
 
 ```bash
-cat ~/.ssh/id_git_github.com | pass insert -m "ssh/id_git_github.com";
+# Private Key
+cat ~/.ssh/id_git_github.com | pass insert -m "ssh-x/id_git_github.com";
+# If you may want to add the public key as well
+cat ~/.ssh/id_git_github.com.pub | pass insert -m "ssh-x/id_git_github.com.pub"
 ```
 

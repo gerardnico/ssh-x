@@ -19,7 +19,7 @@ synopsis(){
 
   cat << EOF
 \`\`\`bash
-$(basename $0)
+$(basename "$0")
 \`\`\`
 EOF
 
@@ -41,7 +41,7 @@ EOF
 add_keys(){
 
   # add default non-protected keys from ~/.ssh
-  ssh-add || echo::info "No non-protected keys found in ~/.ssh and added to agent"
+  ssh-add || echo::info "No unprotected keys in ~/.ssh to load"
 
 	# Loop through the SSH_X_KEY_PASSPHRASE environment variables
 	# and add the key to the agent
@@ -57,27 +57,13 @@ add_keys(){
 	fi
 	for SSH_X_KEY_VARS in $SSH_X_KEY_VARIABLES
 	do
+
 	  KEY_FILENAME=$(echo "$SSH_X_KEY_VARS" | tr '[:upper:]' '[:lower:]')
-	  KEY_VARIABLE_NAME="$SSH_VAR_PREFIX$SSH_X_KEY_VARS"
-	  KEY_FILE_PATH="${SSH_X_KEY_HOME}/$KEY_FILENAME"
-	  echo::info "The SSH env variable $KEY_VARIABLE_NAME was found"
-	  if [ ! -f "$KEY_FILE_PATH" ]; then
-	    echo::info "The env variable $KEY_VARIABLE_NAME designs a key file ($KEY_FILE_PATH) that does not exist" >&2
-      continue
-	  fi
-    echo::info "Trying to add the key $KEY_FILENAME to the SSH agent"
-    # The instruction is in the man page. SSH_ASKPASS needs a path to an executable
-    # that emits the secret to stdout.
-    # See doc: https://man.archlinux.org/man/ssh.1.en#SSH_ASKPASS
     SSH_X_PASSPHRASE=$(eval "echo \$$SSH_VAR_PREFIX$SSH_X_KEY_VARS")
-    TIMEOUT=5
-    echo::info "  - Executing ssh-add (if the passphrase is incorrect, the execution will freeze for ${TIMEOUT} sec)"
-    # freeze due to SSH_ASKPASS_REQUIRE=force otherwise it will ask it at the terminal
-    if ! RESULT=$(timeout $TIMEOUT bash -c "DISPLAY=:0 SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=ssh-x-askpass-env SSH_X_PASSPHRASE=$SSH_X_PASSPHRASE ssh-add -t $SSH_X_LIFE $KEY_FILE_PATH" 2>&1); then
-      echo "Bad Passphrase for $KEY_FILENAME"
-      continue
-    fi
-    echo::info "  - $RESULT" # should be `Identity added:xxx`
+    export SSH_ASKPASS=ssh-x-askpass-env
+    export SSH_X_TIMEOUT=5 # 5 second
+    ssh::add_key "$KEY_FILENAME" "$SSH_X_PASSPHRASE"
+
 	done
 
 }

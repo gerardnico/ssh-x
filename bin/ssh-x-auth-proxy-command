@@ -24,8 +24,6 @@ error::set_trap
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
 # shellcheck source=../../bash-lib/lib/bashlib-ssh.sh
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-ssh.sh"
-# shellcheck source=../../bash-lib/lib/bashlib-command.sh
-source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-command.sh"
 
 # Synopsis for doc
 if [ "${1:-}" == "synopsis" ]; then
@@ -36,8 +34,6 @@ $(basename "$0") <Prompt Label>
 EOF
   exit
 fi
-
-ECHO_FD=$(echo::get_file_descriptor)
 
 # Args
 HOSTNAME=$1
@@ -70,48 +66,10 @@ if [[ $TYPE =~ "public key" ]]; then
     else
       echo::info "Private Key is not in agent"
 
-      # IDE provide their own SSH_ASKPASS
-      # example:
-      # Intellij env:
-      #   SSH_ASKPASS=/mnt/c/Users/ngera/AppData/Local/JetBrains/IntelliJIdea2024.1/tmp/intellij-ssh-askpass-wsl-Debian.sh
-      # Content of the file intellij-ssh-askpass-wsl-Debian.sh
-      #   #!/bin/sh
-      #   export WSLENV=INTELLIJ_SSH_ASKPASS_HANDLER/w:INTELLIJ_SSH_ASKPASS_PORT/w:INTELLIJ_GIT_ASKPASS_HANDLER/w:INTELLIJ_GIT_ASKPASS_PORT/w:INTELLIJ_REBASE_HANDER_NO/w:INTELLIJ_REBASE_HANDER_PORT/w
-      #   "/mnt/c/Idea/jbr/bin/java.exe" -cp "C:/Idea/lib/externalProcess-rt.jar" externalApp.nativessh.NativeSshAskPassApp "$@"
-      SSH_ASKPASS=${SSH_ASKPASS:-"ssh-x-askpass-prompt"}
-
       # Private Key
-      PRIVATE_KEY="$SSH_X_KEY_HOME/$(basename "$KEY" | sed 's/.pub//')"
-      case "$SSH_X_KEY_STORE" in
-        "pass")
-            PASS_FILE="${PASSWORD_STORE_DIR:-"$HOME~/.password-store"}/$PRIVATE_KEY.gpg"
-            if [ ! -f "$PASS_FILE" ]; then
-              echo::err "The pass private key ($PASS_FILE) does not exist"
-              exit 1
-            fi
-            echo::info "Adding Pass Private Key ($PRIVATE_KEY) to agent for a lifetime of $SSH_X_LIFE seconds"
-            SSH_ASKPASS_REQUIRE=require SSH_ASKPASS=$SSH_ASKPASS  ssh-add -t "$SSH_X_LIFE" <(pass "$PRIVATE_KEY") 1>"$ECHO_FD" 2>&1
-        ;;
-        "file")
-            if [ ! -f "$PRIVATE_KEY" ]; then
-              echo::err "The private key ($PRIVATE_KEY) does not exist "
-              exit 1
-            fi
+      PRIVATE_KEY_BASENAME="$(basename "$KEY" | sed 's/.pub//')"
+      ssh::add_key "$PRIVATE_KEY_BASENAME"
 
-            # https://man.openbsd.org/ssh_config#AddKeysToAgent
-            SSH_X_LIFE=${SSH_X_LIFE:-15m}
-            ADD_KEY_TO_AGENT_CONF=$(ssh::get_conf "AddKeysToAgent" "$USER" "$HOSTNAME")
-            if [[ ! "$ADD_KEY_TO_AGENT_CONF" =~ "yes"|"no"|"ask" ]]; then
-              SSH_X_LIFE=$ADD_KEY_TO_AGENT_CONF
-            fi
-            echo::info "Adding Private Key ($PRIVATE_KEY) to agent for a lifetime of $SSH_X_LIFE seconds"
-
-            command::echo_debug_eval "SSH_ASKPASS_REQUIRE=require SSH_ASKPASS=$SSH_ASKPASS ssh-add -t $SSH_X_LIFE $PRIVATE_KEY  1>$ECHO_FD 2>&1"
-            ;;
-        *)
-          echo::err "The SSH_X_KEY_STORE value ($SSH_X_KEY_STORE) is not supported. It should be 'file' or 'pass'"
-          ;;
-      esac
     fi
 fi
 

@@ -27,17 +27,18 @@ ${SYNOPSIS}
 * `SSH_X_LIFE`: the default lifetime of the loaded keys (Default to `15m`) Used if a time interval is not found in the `AddKeysToAgent` conf.
 * `SSH_X_AGENT_ENV`: The location of the agent env file. Default to `$HOME/.ssh/ssh-x-agent.env`
 * `SSH_X_KEY_PASSPHRASE_xxx`: The passphrase for a protected key to be loaded when the agent starts. See [ssh-x-agent-init](ssh-x-agent-init.md)
-
+* `SSH_X_TIMEOUT`: the timeout to enter the passphrase. In non-interactive mode, `ssh-add` will freeze if the passphrase is not correct.
 
 ### SSH
 
 This utility prints also [ssh env](https://man.openbsd.org/ssh.1#ENVIRONMENT)
 
 * [SSH_AUTH_SOCK](https://man.openbsd.org/ssh.1#SSH_AUTH_SOCK): The location of the agent socket Default to `$HOME/.ssh/agent.sock`
-* [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) to set how to retrieve the password without a terminal. `ssh-x` has 2:
+* [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) value is a path to an executable that emits the secret to stdout (known also as pinentry in pgp). `ssh-x` has 2:
   * [ssh-x-askpass-env](ssh-x-askpass-env.md) used to pass the password from a secret store
-  * [ssh-x-askpass-prompt](ssh-x-askpass-prompt.md) used to prompt the user for the secret
+  * [ssh-x-askpass-prompt](ssh-x-askpass-prompt.md) used to prompt the user for the secret (in the terminal or guid, detected automatically)
 * [SSH_ASKPASS_REQUIRE](https://man.openbsd.org/ssh.1#SSH_ASKPASS_REQUIRE) used to require `SSH_ASKPASS` behavior
+
 
 ## Key Store
 
