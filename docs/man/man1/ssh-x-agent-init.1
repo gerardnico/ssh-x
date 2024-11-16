@@ -20,6 +20,12 @@
 .PP
 \f[V]ssh-x-agent-init\f[R]: * start only one SSH agent instance (by
 default SSH starts an agent by session) * and load keys protected or not
+.SH ADVANTAGE
+.PP
+It creates only one ssh-agent process per system, rather than the norm
+of one ssh-agent per login session.
+You only need to enter a passphrase once every time your machine is
+rebooted.
 .SH USAGE: Start only one agent instance
 .PP
 This script is a wrapper around \f[V]ssh-agent -a\f[R]
@@ -29,7 +35,7 @@ This script is a wrapper around \f[V]ssh-agent -a\f[R]
 # in place of
 eval \[dq]$(ssh-agent -a)\[dq]
 # you would use
-eval \[dq]$(ssh-agent-init)\[dq]
+eval \[dq]$(source ssh-agent-init)\[dq]
 \f[R]
 .fi
 .PP

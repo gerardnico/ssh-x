@@ -47,7 +47,7 @@ private keys.
 Default to:
 .RS 2
 .IP \[bu] 2
-the absolute path \f[V]/home/admin/.ssh\f[R]: for the file key store:
+the absolute path \f[V]$HOME/.ssh\f[R]: for the file key store:
 .PD 0
 .P
 .PD
@@ -70,28 +70,39 @@ to \f[V]15m\f[R]) Used if a time interval is not found in the
 \f[V]AddKeysToAgent\f[R] conf.
 .IP \[bu] 2
 \f[V]SSH_X_AGENT_ENV\f[R]: The location of the agent env file.
-Default to \f[V]/home/admin/.ssh/ssh-x-agent.env\f[R]
+Default to \f[V]$HOME/.ssh/ssh-x-agent.env\f[R]
 .IP \[bu] 2
 \f[V]SSH_X_KEY_PASSPHRASE_xxx\f[R]: The passphrase for a protected key
 to be loaded when the agent starts.
 See ssh-x-agent-init
+.IP \[bu] 2
+\f[V]SSH_X_TIMEOUT\f[R]: the timeout to enter the passphrase.
+In non-interactive mode, \f[V]ssh-add\f[R] will freeze if the passphrase
+is not correct.
+.IP \[bu] 2
+\f[V]SSH_X_CALLER_LOG\f[R]: the path to a log file.
+Example: \f[V]/tmp/ssh-x-caller-log.log\f[R].
+If the value is not empty, it will log the process call tree.
+If you get intempestive pinentry prompt, you can see who is calling the
+ssh-x scripts.
 .SS SSH
 .PP
 This utility prints also ssh
 env (https://man.openbsd.org/ssh.1#ENVIRONMENT)
 .IP \[bu] 2
 SSH_AUTH_SOCK (https://man.openbsd.org/ssh.1#SSH_AUTH_SOCK): The
-location of the agent socket Default to
-\f[V]/home/admin/.ssh/agent.sock\f[R]
+location of the agent socket Default to \f[V]$HOME/.ssh/agent.sock\f[R]
 .IP \[bu] 2
-SSH_ASKPASS (https://man.openbsd.org/ssh.1#SSH_ASKPASS) to set how to
-retrieve the password without a terminal.
+SSH_ASKPASS (https://man.openbsd.org/ssh.1#SSH_ASKPASS) value is a path
+to an executable that emits the secret to stdout (known also as pinentry
+in pgp).
 \f[V]ssh-x\f[R] has 2:
 .RS 2
 .IP \[bu] 2
 ssh-x-askpass-env used to pass the password from a secret store
 .IP \[bu] 2
-ssh-x-askpass-prompt used to prompt the user for the secret
+ssh-x-askpass-prompt used to prompt the user for the secret (in the
+terminal or guid, detected automatically)
 .RE
 .IP \[bu] 2
 SSH_ASKPASS_REQUIRE (https://man.openbsd.org/ssh.1#SSH_ASKPASS_REQUIRE)
@@ -104,7 +115,7 @@ stored in the pass password manager (https://www.passwordstore.org/)
 .PP
 You choose your key store with the variable SSHX_KEY_STORE
 .PP
-For the 2 stores, the key is located at \f[V]/KeyName\f[R] where : *
-SSHX_KEY_HOME defines the directory location.
+For the 2 stores, the key is located at \f[V]$SSHX_KEY_HOME/KeyName\f[R]
+where : * SSHX_KEY_HOME defines the directory location.
 * \f[V]KeyName\f[R] is the name of the private key (ie the public key
 without the \f[V].pub\f[R] extension)

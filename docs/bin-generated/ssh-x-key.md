@@ -14,7 +14,7 @@ ssh-x key command options
 
 where `command` can be:
 
-* `add`          - Add a private key from the agent
+* `add`          - Add a private key from the agent. This is a relatif name (ie the name of the key not the path)
 * `comment`      - Set or print the comment
 * `ls`           - List all the keys, fingerprint and permissions on the file system and agent
 * `passphrase`   - Set, delete a passphrase

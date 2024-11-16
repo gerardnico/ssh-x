@@ -28,6 +28,7 @@ ${SYNOPSIS}
 * `SSH_X_AGENT_ENV`: The location of the agent env file. Default to `$HOME/.ssh/ssh-x-agent.env`
 * `SSH_X_KEY_PASSPHRASE_xxx`: The passphrase for a protected key to be loaded when the agent starts. See [ssh-x-agent-init](ssh-x-agent-init.md)
 * `SSH_X_TIMEOUT`: the timeout to enter the passphrase. In non-interactive mode, `ssh-add` will freeze if the passphrase is not correct.
+* `SSH_X_CALLER_LOG`: the path to a log file. Example: `/tmp/ssh-x-caller-log.log`. If the value is not empty, it will log the process call tree. If you get intempestive pinentry prompt, you can see who is calling the ssh-x scripts.
 
 ### SSH
 

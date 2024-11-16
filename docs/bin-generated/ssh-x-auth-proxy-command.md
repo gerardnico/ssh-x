@@ -47,13 +47,12 @@ export SSH_X_KEY_STORE=pass
 ```
 With this environment, `ssh-x-auth-proxy-command` will:
 * check if the private key of the public key `~/.ssh/id_git_github.pub` is present (ie loaded in the agent)
-* if not, it will add the private key located at `$PASSWORD_STORE_DIR/ssh-x/id_git_github` with a lifetime of `15 minutes`
+* if not, it will add the private key located at `ssh/id_git_github` with a lifetime of `15 minutes`
 
 Because the private key is in the [pass manager](https://www.passwordstore.org/), the key
-is already protected and may have no passphrase but if this is the case, we still ask for the passphrase
+is already protected and would have no passphrase but if this is the case, we still ask for the passphrase
 
 ### How to configure for all hosts
-
 This example shows you how you can configure `ssh` to
 use `ssh-x-auth-proxy-command` for all hosts thanks to the SSH template features.
 
@@ -117,7 +116,34 @@ Your [Identity](https://man.openbsd.org/ssh_config#IdentityFile) should be a pub
 See `ssh-x-env(1)`
 
 
-## How to 
+## How to know why I get an intempestive pinentry dialog?
+
+When implementing this proxy, you may get intempestive pinentry dialog asking you 
+for your master password.
+
+If you want to discover from where they are coming from set the log file [SSH_X_CALLERS_LOG env](ssh-x-env.md).
+```bash
+export SSH_X_CALLERS_LOG=/tmp/ssh-x-auth-proxy-callers.log
+```
+You will get session recording such as:
+```
+SESSION_TIME          PID     CMDLINE
+2024-11-16 20:23:42 - 31980 - /usr/bin/ssh -o SendEnv=GIT_PROTOCOL git@github.com git-upload-pack 'gerardnico/ssh-x.git'
+2024-11-16 20:23:42 - 31979 - git -c color.ui=always fetch
+2024-11-16 20:23:42 - 31978 - /bin/bash /home/admin/code/git-x/bin/git-exec fetch
+2024-11-16 20:23:42 - 31656 - /bin/bash /home/admin/code/git-x/bin/git-exec fetch
+2024-11-16 20:23:42 - 31655 - /usr/bin/git exec fetch
+2024-11-16 20:23:42 - 31654 - bash /usr/local/sbin/git exec fetch
+2024-11-16 20:23:42 - 2633 - -bash
+2024-11-16 20:23:42 - 2632 - /init
+2024-11-16 20:23:42 - 2631 - /init
+2024-11-16 20:23:42 - 1 - /init
+```
+where:
+* the first column `SESSION_TIME` is the session time (ie one time = one call)
+* the second column `PID` is the process id
+* the third column `CMDLINE` is the command line
+
 
 ### How to add your private key to pass
 
@@ -125,6 +151,9 @@ To add the private key `~/.ssh/id_git_github.com` into pass at `ssh/id_git_githu
 you would use this command:
 
 ```bash
-cat ~/.ssh/id_git_github.com | pass insert -m "ssh/id_git_github.com";
+# Private Key
+cat ~/.ssh/id_git_github.com | pass insert -m "ssh-x/id_git_github.com";
+# If you may want to add the public key as well
+cat ~/.ssh/id_git_github.com.pub | pass insert -m "ssh-x/id_git_github.com.pub"
 ```
 

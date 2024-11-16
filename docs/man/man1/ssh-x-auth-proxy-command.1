@@ -146,7 +146,41 @@ be a public key
 .SS Environment
 .PP
 See \f[V]ssh-x-env(1)\f[R]
-.SS How to
+.SS How to know why I get an intempestive pinentry dialog?
+.PP
+When implementing this proxy, you may get intempestive pinentry dialog
+asking you for your master password.
+.PP
+If you want to discover from where they are coming from set the log file
+SSH_X_CALLERS_LOG env.
+.IP
+.nf
+\f[C]
+export SSH_X_CALLERS_LOG=/tmp/ssh-x-auth-proxy-callers.log
+\f[R]
+.fi
+.PP
+You will get session recording such as:
+.IP
+.nf
+\f[C]
+SESSION_TIME          PID     CMDLINE
+2024-11-16 20:23:42 - 31980 - /usr/bin/ssh -o SendEnv=GIT_PROTOCOL git\[at]github.com git-upload-pack \[aq]gerardnico/ssh-x.git\[aq]
+2024-11-16 20:23:42 - 31979 - git -c color.ui=always fetch
+2024-11-16 20:23:42 - 31978 - /bin/bash /home/admin/code/git-x/bin/git-exec fetch
+2024-11-16 20:23:42 - 31656 - /bin/bash /home/admin/code/git-x/bin/git-exec fetch
+2024-11-16 20:23:42 - 31655 - /usr/bin/git exec fetch
+2024-11-16 20:23:42 - 31654 - bash /usr/local/sbin/git exec fetch
+2024-11-16 20:23:42 - 2633 - -bash
+2024-11-16 20:23:42 - 2632 - /init
+2024-11-16 20:23:42 - 2631 - /init
+2024-11-16 20:23:42 - 1 - /init
+\f[R]
+.fi
+.PP
+where: * the first column \f[V]SESSION_TIME\f[R] is the session time (ie
+one time = one call) * the second column \f[V]PID\f[R] is the process id
+* the third column \f[V]CMDLINE\f[R] is the command line
 .SS How to add your private key to pass
 .PP
 To add the private key \f[V]\[ti]/.ssh/id_git_github.com\f[R] into pass
@@ -154,6 +188,9 @@ at \f[V]ssh/id_git_github.com\f[R], you would use this command:
 .IP
 .nf
 \f[C]
-cat \[ti]/.ssh/id_git_github.com | pass insert -m \[dq]ssh/id_git_github.com\[dq];
+# Private Key
+cat \[ti]/.ssh/id_git_github.com | pass insert -m \[dq]ssh-x/id_git_github.com\[dq];
+# If you may want to add the public key as well
+cat \[ti]/.ssh/id_git_github.com.pub | pass insert -m \[dq]ssh-x/id_git_github.com.pub\[dq]
 \f[R]
 .fi

@@ -116,7 +116,34 @@ Your [Identity](https://man.openbsd.org/ssh_config#IdentityFile) should be a pub
 See `ssh-x-env(1)`
 
 
-## How to 
+## How to know why I get an intempestive pinentry dialog?
+
+When implementing this proxy, you may get intempestive pinentry dialog asking you 
+for your master password.
+
+If you want to discover from where they are coming from set the log file [SSH_X_CALLERS_LOG env](ssh-x-env.md).
+```bash
+export SSH_X_CALLERS_LOG=/tmp/ssh-x-auth-proxy-callers.log
+```
+You will get session recording such as:
+```
+SESSION_TIME          PID     CMDLINE
+2024-11-16 20:23:42 - 31980 - /usr/bin/ssh -o SendEnv=GIT_PROTOCOL git@github.com git-upload-pack 'gerardnico/ssh-x.git'
+2024-11-16 20:23:42 - 31979 - git -c color.ui=always fetch
+2024-11-16 20:23:42 - 31978 - /bin/bash /home/admin/code/git-x/bin/git-exec fetch
+2024-11-16 20:23:42 - 31656 - /bin/bash /home/admin/code/git-x/bin/git-exec fetch
+2024-11-16 20:23:42 - 31655 - /usr/bin/git exec fetch
+2024-11-16 20:23:42 - 31654 - bash /usr/local/sbin/git exec fetch
+2024-11-16 20:23:42 - 2633 - -bash
+2024-11-16 20:23:42 - 2632 - /init
+2024-11-16 20:23:42 - 2631 - /init
+2024-11-16 20:23:42 - 1 - /init
+```
+where:
+* the first column `SESSION_TIME` is the session time (ie one time = one call)
+* the second column `PID` is the process id
+* the third column `CMDLINE` is the command line
+
 
 ### How to add your private key to pass
 

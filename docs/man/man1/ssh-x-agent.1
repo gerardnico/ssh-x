@@ -19,7 +19,7 @@
 .SH NAME
 .PP
 \f[V]ssh-x-agent\f[R] - A cli of SSH Agent Utilities
-.SS SYNOPSIS
+.SH SYNOPSIS
 .IP
 .nf
 \f[C]
@@ -36,3 +36,27 @@ return env statement.
 \f[V]SSH_AGENT_PID\f[R] or any ssh-agent process).
 .IP \[bu] 2
 \f[V]state\f[R] - State of the agent
+.SH SECURITY NOTE AND LIFETIME
+.PP
+\f[V]ssh-agent\f[R] enhances security by allowing you to use
+passphrase-protected SSH keys without entering the passphrase every
+time.
+.PP
+However, anyone with access to the agent\[cq]s socket SSH_AUTH_SOCK and
+your user permissions can use the keys managed by the agent.
+.PP
+That\[cq]s why by default, we set a lifetime of 15m (3 times the default
+of 5m for sudo).
+.PP
+You can override it with the SSH_X_LIFE environment
+.PP
+Example:
+.IP
+.nf
+\f[C]
+# disable
+export SSH_X_LIFE=0
+# 1h
+export SSH_X_LIFE=1h
+\f[R]
+.fi

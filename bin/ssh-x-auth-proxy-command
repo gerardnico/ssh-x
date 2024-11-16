@@ -15,15 +15,16 @@
 # export BASHLIB_ECHO_LEVEL=4
 
 
-# Start
-set -Eeuo pipefail
 # shellcheck source=../../bash-lib/lib/bashlib-error.sh
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-error.sh"
+error::set_strict_mode
 error::set_trap
 # shellcheck source=../../bash-lib/lib/bashlib-echo.sh
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-echo.sh"
 # shellcheck source=../../bash-lib/lib/bashlib-ssh.sh
 source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-ssh.sh"
+# shellcheck source=../../bash-lib/lib/bashlib-stack.sh
+source "${BASHLIB_LIBRARY_PATH:-}${BASHLIB_LIBRARY_PATH:+/}bashlib-stack.sh"
 
 # Synopsis for doc
 if [ "${1:-}" == "synopsis" ]; then
@@ -45,6 +46,10 @@ echo::debug "Port: $PORT"
 USER=$4
 echo::debug "User: $USER"
 
+SSH_X_CALLERS_LOG=/tmp/ssh-x-auth-proxy-parent.log
+if [ "$SSH_X_CALLERS_LOG" != "" ]; then
+  stack::print_process_tree >> $SSH_X_CALLERS_LOG
+fi
 
 # Env
 ENV=$(source ssh-x-env)
@@ -60,6 +65,7 @@ echo::debug "Key for destination ($USER@$HOSTNAME): $KEY"
 TYPE=$(file -b "$KEY")
 echo::debug "Key File type: $TYPE"
 if [[ $TYPE =~ "public key" ]]; then
+
     # Check if the private key is in the agent
     if ssh::is_key_in_agent "$KEY"; then
       echo::debug "Private Key is in agent"

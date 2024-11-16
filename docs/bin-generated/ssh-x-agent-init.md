@@ -9,6 +9,12 @@
 * and [load keys](#key-loading) protected or not
 
 
+# ADVANTAGE
+
+It creates only one ssh-agent process per system,
+rather than the norm of one ssh-agent per login session.
+You only need to enter a passphrase once every time your machine is rebooted.
+
 
 # USAGE: Start only one agent instance
 
@@ -18,7 +24,7 @@ This script is a wrapper around `ssh-agent -a`
 # in place of
 eval "$(ssh-agent -a)"
 # you would use
-eval "$(ssh-agent-init)"
+eval "$(source ssh-agent-init)"
 ```
 
 You would place this script in a start script such as `.bashrc`.

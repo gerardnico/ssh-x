@@ -70,3 +70,7 @@ echo "export SSH_X_AGENT_ENV=$SSH_X_AGENT_ENV"$'\n'
 echo "# SSH_X_LIFE: The life of keys in the agent"
 SSH_X_LIFE=${SSH_X_LIFE:-15m}
 echo "export SSH_X_LIFE=$SSH_X_LIFE"$'\n'
+
+# SSH_X_CALLERS_LOG
+SSH_X_CALLERS_LOG=${SSH_X_CALLERS_LOG:-}
+echo "# SSH_X_CALLERS_LOG: Path to a log file for recording the caller tree (getting the caller)"
