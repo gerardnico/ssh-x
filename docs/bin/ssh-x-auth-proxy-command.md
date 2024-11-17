@@ -128,21 +128,25 @@ export SSH_X_CALLERS_LOG=/tmp/ssh-x-auth-proxy-callers.log
 You will get session recording such as:
 ```
 SESSION_TIME          PID     CMDLINE
-2024-11-16 20:23:42 - 31980 - /usr/bin/ssh -o SendEnv=GIT_PROTOCOL git@github.com git-upload-pack 'gerardnico/ssh-x.git'
-2024-11-16 20:23:42 - 31979 - git -c color.ui=always fetch
-2024-11-16 20:23:42 - 31978 - /bin/bash /home/admin/code/git-x/bin/git-exec fetch
-2024-11-16 20:23:42 - 31656 - /bin/bash /home/admin/code/git-x/bin/git-exec fetch
-2024-11-16 20:23:42 - 31655 - /usr/bin/git exec fetch
-2024-11-16 20:23:42 - 31654 - bash /usr/local/sbin/git exec fetch
-2024-11-16 20:23:42 - 2633 - -bash
-2024-11-16 20:23:42 - 2632 - /init
-2024-11-16 20:23:42 - 2631 - /init
-2024-11-16 20:23:42 - 1 - /init
+2024-11-17 22:18:46 - 50983 - /usr/bin/ssh -o SendEnv=GIT_PROTOCOL git@github.com git-upload-pack 'gerardnico/infra.git'
+2024-11-17 22:18:46 - 50980 - /usr/bin/git -c credential.helper= -c core.quotepath=false -c log.showSignature=false ls-remote --heads origin main
+2024-11-17 22:18:46 - 50979 - bash /usr/local/sbin/git -c credential.helper= -c core.quotepath=false -c log.showSignature=false ls-remote --heads origin main
+2024-11-17 22:18:46 - 50976 - setsid -w /usr/local/sbin/git -c credential.helper= -c core.quotepath=false -c log.showSignature=false ls-remote --heads origin main
+2024-11-17 22:18:46 - 60 - /tmp/tmp.AxjeGQW6vQ/ijent grpc-stdio-server --self-delete-on-exit
+2024-11-17 21:58:46 - 59 - /init
+2024-11-17 21:58:46 - 1 - /init
 ```
 where:
 * the first column `SESSION_TIME` is the session time (ie one time = one call)
 * the second column `PID` is the process id
 * the third column `CMDLINE` is the command line
+
+Due to:
+* [Disable git ls-remote/ssh key voluntary access](https://youtrack.jetbrains.com/issue/IJPL-75124/Disable-git-ls-remote-ssh-key-voluntary-access)
+* Send to [On project open gpg card password asked due to spawned 'git ls-remote'](https://youtrack.jetbrains.com/issue/IJPL-105187/On-project-open-gpg-card-password-asked-due-to-spawned-git-ls-remote)
+Resolved by:
+* Settings > Control > Git > `Disable`, `Explicit check for incoming commits on remote`
+
 
 
 ### How to add your private key to pass
