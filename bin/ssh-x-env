@@ -17,6 +17,13 @@ EOF
   exit
 fi
 
+SSH_X_USER_ENV_FILE=$HOME/.bashenv.d/ssh-x.sh
+echo "# SSH_X_USER_ENV_FILE: The location of the user env files (source if exists)"
+echo "# SSH_X_USER_ENV_FILE=$SSH_X_USER_ENV_FILE"
+if [ -f $SSH_X_USER_ENV_FILE ]; then
+  source $SSH_X_USER_ENV_FILE
+fi
+
 # SSH_AUTH_SOCK
 SSH_AUTH_SOCK=${SSH_AUTH_SOCK:-"$HOME/.ssh/agent.sock"}
 echo "# SSH_AUTH_SOCK: The location of the agent socket"
@@ -74,3 +81,4 @@ echo "export SSH_X_LIFE=$SSH_X_LIFE"$'\n'
 # SSH_X_CALLERS_LOG
 SSH_X_CALLERS_LOG=${SSH_X_CALLERS_LOG:-}
 echo "# SSH_X_CALLERS_LOG: Path to a log file for recording the caller tree (getting the caller)"
+echo "export SSH_X_CALLERS_LOG=$SSH_X_CALLERS_LOG"$'\n'

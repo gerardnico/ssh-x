@@ -46,15 +46,17 @@ echo::debug "Port: $PORT"
 USER=$4
 echo::debug "User: $USER"
 
-SSH_X_CALLERS_LOG=/tmp/ssh-x-auth-proxy-parent.log
-if [ "$SSH_X_CALLERS_LOG" != "" ]; then
-  stack::print_process_tree >> $SSH_X_CALLERS_LOG
-fi
 
 # Env
 ENV=$(source ssh-x-env)
 echo::debug "$ENV"
 eval "$ENV"
+
+# After the env
+if [ "$SSH_X_CALLERS_LOG" != "" ]; then
+  stack::print_process_tree >> $SSH_X_CALLERS_LOG
+fi
+
 
 # Get the identity conf
 KEY=$(ssh::get_identity "$USER" "$HOSTNAME")
