@@ -29,6 +29,7 @@ ${SYNOPSIS}
 * `SSH_X_KEY_PASSPHRASE_xxx`: The passphrase for a protected key to be loaded when the agent starts. See [ssh-x-agent-init](ssh-x-agent-init.md)
 * `SSH_X_TIMEOUT`: the timeout to enter the passphrase. In non-interactive mode, `ssh-add` will freeze if the passphrase is not correct.
 * `SSH_X_CALLER_LOG`: the path to a log file. Example: `/tmp/ssh-x-caller-log.log`. If the value is not empty, it will log the process call tree. If you get intempestive pinentry prompt, you can see who is calling the ssh-x scripts.
+* `SSH_X_PASS_STORE`: the pass compatible store (`pass` default or `gopass`) 
 
 ### SSH
 
@@ -45,9 +46,20 @@ This utility prints also [ssh env](https://man.openbsd.org/ssh.1#ENVIRONMENT)
 
 We support 2 keys store:
 * `file`: where the key is stored in a file system directory (default)
-* `pass`: where the key is stored in the [pass password manager](https://www.passwordstore.org/)
+* `pass`: where the key is stored in a pass compatible store:
+  * in the [pass password manager](https://www.passwordstore.org/)
+  * in [gopass](https://www.gopass.pw/)
 
-You choose your key store with the variable [SSHX_KEY_STORE](#ssh-x)
+You choose:
+* your key store with the variable [SSHX_KEY_STORE](#ssh-x)
+```bash
+export SSHX_KEY_STORE=pass
+```
+* the pass store with the variable [SSHX_PASS_STORE](#ssh-x)
+```bash
+# for gopass (default to pass)
+export SSHX_PASS_STORE=gopass
+```
 
 For the 2 stores, the key is located at `$SSHX_KEY_HOME/KeyName` where :
 * [SSHX_KEY_HOME](#ssh-x) defines the directory location.

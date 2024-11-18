@@ -36,7 +36,7 @@ and is mandatory for editor as they don't take any Shell environment variable.
 
 
 
-### Load a private key stored in the pass password manager store 
+### Load a private key stored in a pass store 
 
 With the same configuration as [previously](#load-a-private-key-stored-on-the-file-system-for-one-host)
 but with the [pass manager as key store](ssh-x-env#key-store)
