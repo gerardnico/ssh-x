@@ -17,7 +17,7 @@ With the example below, `ssh-x-auth-proxy-command` will:
 * if not, it will add the private key located at `~/.ssh/id_git_github` with a lifetime of `15 minutes`
 * if the key is protected, it will ask for the passphrase
 
-With this `~/.ssh/conf` configuration
+With this `~/.ssh/config` configuration
 ```conf
 Host github.com
     # Public key as identity
@@ -31,7 +31,7 @@ Host github.com
 ```
 where:
 
-Note that `env BASHLIB_LIBRARY_PATH=/path/to/bash-lib/lib` set the library location of [bash lib](https://github.com/gerardnico/bash-lib) 
+Note that `env BASHLIB_LIBRARY_PATH=/path/to/bash-lib/lib` uses the [env command](https://en.wikipedia.org/wiki/Env) to set the library location of [bash lib](https://github.com/gerardnico/bash-lib) 
 and is mandatory for editor as they don't take any Shell environment variable.
 
 
@@ -121,9 +121,11 @@ See `ssh-x-env(1)`
 When implementing this proxy, you may get intempestive pinentry dialog asking you 
 for your master password.
 
-If you want to discover from where they are coming from set the log file [SSH_X_CALLERS_LOG env](ssh-x-env.md).
-```bash
-export SSH_X_CALLERS_LOG=/tmp/ssh-x-auth-proxy-callers.log
+If you want to discover from where they are coming from, set the log file [SSH_X_CALLERS_LOG env](ssh-x-env.md).
+Example
+```conf
+Host github.com
+     ProxyCommand env BASHLIB_LIBRARY_PATH=/path/to/bash-lib/lib SSH_X_CALLERS_LOG=/tmp/ssh-x-auth-proxy-callers.log /path/to/ssh-x-auth-proxy-command %h %n %p %r
 ```
 You will get session recording such as:
 ```
@@ -145,7 +147,7 @@ where:
 * the third column `CMDLINE` is the command line
 
 
-### How to add your private key to pass
+## How to add your private key to pass
 
 To add the private key `~/.ssh/id_git_github.com` into pass at `ssh/id_git_github.com`,
 you would use this command:

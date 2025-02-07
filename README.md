@@ -28,10 +28,6 @@ You can install `ssh-x` with [homebrew](https://brew.sh/)
 ```bash
 brew install --HEAD gerardnico/tap/sshx
 ```
-Then set the `BASHLIB_LIBRARY_PATH` in your bashrc
-```bash
-export BASHLIB_LIBRARY_PATH=$(brew --prefix bashlib)/lib
-```
 
 ### WSL Git IDE and SSH Agent integration
 
