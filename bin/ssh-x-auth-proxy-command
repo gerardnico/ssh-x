@@ -48,13 +48,14 @@ echo::debug "User: $USER"
 
 
 # Env
-ENV=$(source ssh-x-env)
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+ENV=$(source "$SCRIPT_DIR/ssh-x-env")
 echo::debug "$ENV"
 eval "$ENV"
 
 # After the env
 if [ "$SSH_X_CALLERS_LOG" != "" ]; then
-  stack::print_process_tree >> $SSH_X_CALLERS_LOG
+  stack::print_process_tree >> "$SSH_X_CALLERS_LOG"
 fi
 
 
