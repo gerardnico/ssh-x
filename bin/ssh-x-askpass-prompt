@@ -45,4 +45,6 @@ if [ "$SSH_X_ASKPASS_PINENTRY" == "zenity" ]; then
   # The prompt is the title in zenity
   PROMPT="$KEY"
 fi
+
+echo::debug "Calling the pin ($SSH_X_ASKPASS_PINENTRY) with the prompt ($PROMPT)"
 bash::get_pin "$SSH_X_ASKPASS_PINENTRY" "$PROMPT"
