@@ -1,46 +1,51 @@
-# SSH-X  - A collection of SSH utilities
-
+# SSH-X - A collection of SSH utilities
 
 ## About
 
-`SSH-X` is a collection of utilities around [OpenSSH](https://www.openssh.com/) 
+`SSH-X` is a collection of utilities around [OpenSSH](https://www.openssh.com/)
 
 ## List
 
 * [ssh-x](docs/bin-generated/ssh-x.md) - The main entry of all `ssh-x` utilities.
-  * [ssh-x-agent-init](docs/bin-generated/ssh-x-agent-init.md) - Start a singleton SSH agent and load private keys automatically
+  * [ssh-x-agent-init](docs/bin-generated/ssh-x-agent-init.md) - Start a singleton SSH agent and load private keys
+    automatically
   * [ssh-x-env](docs/bin-generated/ssh-x-env.md) - Print the `SSH` and `SSH-X` environment
   * `ssh-x info` - Get a 360 view of your SSH installation.
   * [ssh-x-key](docs/bin-generated/ssh-x-key.md) - Manage your keys
   * [ssh-x-env](docs/bin-generated/ssh-x-env.md) - Get the environment information
   * [ssh-x-key-passphrase](docs/bin-generated/ssh-x-key-passphrase.md) - Add or remove a key passphrase
-* [ssh-x-auth-proxy-command](docs/bin-generated/ssh-x-auth-proxy-command.md) - An Ssh `ProxyCommand` that load automatically your private keys when you use your public key as identity
+* [ssh-x-auth-proxy-command](docs/bin-generated/ssh-x-auth-proxy-command.md) - An Ssh `ProxyCommand` that load
+  automatically your private keys when you use your public key as identity
 * [SSH_ASKPASS](https://man.openbsd.org/ssh.1#SSH_ASKPASS) program
   * [ssh-x-askpass-prompt](docs/bin-generated/ssh-x-askpass-prompt.md) - Prompt for a secret from a terminal or GUI
   * [ssh-x-askpass-env](docs/bin-generated/ssh-x-askpass-env.md) - Echo a secret from an environment variable
-
 
 ## Installation
 
 ### HomeBrew
 
 You can install `ssh-x` with [homebrew](https://brew.sh/)
+
 ```bash
 brew install --HEAD gerardnico/tap/sshx
 ```
 
+If you can't load a `bash-lib` library file, be sure to have the
+variable `SSH_BASHLIB_LIBRARY_PATH` set with the directory of the bash-lib installation directory.
+
 ### WSL Git IDE and SSH Agent integration
 
-Because this library uses the linux `ssh-agent` (ie wsl), 
+Because this library uses the linux `ssh-agent` (ie wsl),
 it's not possible to pass the ssh-agent env (ie process id) directly with `WSLENV`.
 Git therefore does not know that there is an agent running.
 
 The solution is to:
+
 * create a `git` wrapper at `/usr/local/sbin/git`
 * set this `git` executable as your git executable in your IDE
 
-
 Example:
+
 ```bash
 #!/usr/bin/env bash
 
@@ -58,15 +63,20 @@ export SSH_X_KEY_STORE="pass"
 ```
 
 Test from a Windows terminal
+
 ```bash
 wsl --cd /path/to/a/git/repo git fetch origin
 ```
 
-Example of a console git fetch with IntelliJ and [pass as a private key store](docs/bin-generated/ssh-x-env.md#key-store)
+Example of a console git fetch with IntelliJ
+and [pass as a private key store](docs/bin-generated/ssh-x-env.md#key-store)
+
 ```bash
 19:30:39.727: [touch] /usr/local/sbin/git -c credential.helper= -c core.quotepath=false -c log.showSignature=false fetch origin --recurse-submodules=no --progress --prune
 ```
+
 Output:
+
 ```
 ssh-x-auth-proxy-command::main#71: Private Key is not in agent
 ssh-x-auth-proxy-command::main#91: Adding Pass Private Key (ssh-x/id_git_github.com) to agent for a lifetime of 15m seconds
@@ -80,6 +90,7 @@ If you use [pass as a private key store](docs/bin-generated/ssh-x-env.md#key-sto
 a pgp gui pinentry.
 
 Example with `pinentry-qt`.
+
 ```bash
 sudo apt -y install pinentry-qt
 ```
@@ -90,4 +101,4 @@ sudo apt -y install pinentry-qt
 
 If you get this error from your IDE, this is because
 Git does not know your agent.
-See [WSL GIT IDE Integration](#wsl-git-ide-integration)
+See [WSL GIT IDE Integration](#wsl-git-ide-and-ssh-agent-integration)

@@ -6,6 +6,8 @@
 # echo::debug "$ENV"
 # eval "$ENV"
 
+set -Eeuo pipefail
+export PATH=${SSH_BASHLIB_LIBRARY_PATH}:$PATH
 
 if [ "${1:-}" == "synopsis" ]; then
     cat << 'EOF'
@@ -20,8 +22,9 @@ fi
 SSH_X_USER_ENV_FILE=$HOME/.bashenv.d/ssh-x.sh
 echo "# SSH_X_USER_ENV_FILE: The location of the user env files (source if exists)"
 echo "# SSH_X_USER_ENV_FILE=$SSH_X_USER_ENV_FILE"
-if [ -f $SSH_X_USER_ENV_FILE ]; then
-  source $SSH_X_USER_ENV_FILE
+if [ -f "$SSH_X_USER_ENV_FILE" ]; then
+  # shellcheck disable=SC1090
+  source "$SSH_X_USER_ENV_FILE"
 fi
 
 # SSH_AUTH_SOCK
