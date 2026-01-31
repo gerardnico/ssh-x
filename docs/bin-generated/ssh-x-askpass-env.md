@@ -15,4 +15,4 @@ ssh-x-askpass-env
 
 # USED BY
 
-It's used by [ssh-x-agent-init](ssh-x-agent-init.md)
+It's used by [ssh-x-agent-init](ssh-x-agent-start.md)

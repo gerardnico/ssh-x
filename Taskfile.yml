@@ -1,0 +1,8 @@
+version: '3'
+
+tasks:
+  # Check all links
+  links:
+    cmds:
+      - |
+        markdown-link-check --quiet --config .config/markdown-link-check.config.json .

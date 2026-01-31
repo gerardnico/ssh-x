@@ -12,8 +12,8 @@ error::set_trap
 source "bashlib-echo.sh"
 # shellcheck source=./bashlib-doc.sh
 source "bashlib-doc.sh"
-# shellcheck source=./bashlib-ssh.sh
-source "bashlib-ssh.sh"
+# shellcheck source=ssh-x-lib.sh
+source ssh-x-lib.sh
 
 
 synopsis(){

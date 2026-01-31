@@ -23,8 +23,8 @@ error::set_strict_mode
 error::set_trap
 # shellcheck source=../../bash-lib/lib/bashlib-echo.sh
 source "bashlib-echo.sh"
-# shellcheck source=../../bash-lib/lib/bashlib-ssh.sh
-source "bashlib-ssh.sh"
+# shellcheck source=ssh-x-lib.sh
+source ssh-x-lib.sh
 # shellcheck source=../../bash-lib/lib/bashlib-stack.sh
 source "bashlib-stack.sh"
 
@@ -60,10 +60,6 @@ if [ -d "$BREW_DIR" ]; then
   export PATH="$BREW_DIR:$PATH"
 fi
 
-# After the env
-if [ "$SSH_X_CALLERS_LOG" != "" ]; then
-  stack::print_process_tree >> "$SSH_X_CALLERS_LOG"
-fi
 
 # Get the identity conf
 KEY=$(ssh::get_identity "$USER" "$HOSTNAME")

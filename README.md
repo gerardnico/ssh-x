@@ -7,7 +7,7 @@
 ## List
 
 * [ssh-x](docs/bin-generated/ssh-x.md) - The main entry of all `ssh-x` utilities.
-  * [ssh-x-agent-init](docs/bin-generated/ssh-x-agent-init.md) - Start a singleton SSH agent and load private keys
+  * [ssh-x-agent-init](docs/bin-generated/ssh-x-agent-start.md) - Start a singleton SSH agent and load private keys
     automatically
   * [ssh-x-env](docs/bin-generated/ssh-x-env.md) - Print the `SSH` and `SSH-X` environment
   * `ssh-x info` - Get a 360 view of your SSH installation.
@@ -96,6 +96,11 @@ sudo apt -y install pinentry-qt
 ```
 
 ## Support
+
+### Caller log: SSH_X_CALLERS_LOG
+
+You can set the env `SSH_X_CALLERS_LOG` to a directory and `ssh-x` will create
+a log file each time the `ssh:add` function is called showing a prompt.
 
 ### Permission denied (publickey)
 

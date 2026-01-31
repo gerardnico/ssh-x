@@ -39,9 +39,9 @@ and is mandatory for editor as they don't take any Shell environment variable.
 ### Load a private key stored in a pass store 
 
 With the same configuration as [previously](#load-a-private-key-stored-on-the-file-system-for-one-host)
-but with the [pass manager as key store](ssh-x-env#key-store)
+but with the [pass manager as key store](ssh-x-env.md#key-store)
 
-Change the [key store](ssh-x-env#key-store) to `pass` by setting the following environment variable in your `.bashrc`
+Change the [key store](ssh-x-env.md#key-store) to `pass` by setting the following environment variable in your `.bashrc`
 ```bash
 export SSH_X_KEY_STORE=pass
 ```

@@ -1,10 +1,10 @@
-% ssh-x-agent-init(1) Version Latest | Start one agent instance only
+% ssh-x-agent-start(1) Version Latest | Start one agent instance only
 
 
 # NAME
 
 
-`ssh-x-agent-init`:
+`ssh-x-agent-start`:
 * start only one SSH agent instance (by default SSH starts an agent by session)
 * and [load keys](#key-loading) protected or not
 

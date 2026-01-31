@@ -7,8 +7,8 @@ source "bashlib-error.sh"
 error::set_trap
 # shellcheck source=../../bash-lib/lib/bashlib-echo.sh
 source "bashlib-echo.sh"
-# shellcheck source=../../bash-lib/lib/bashlib-ssh.sh
-source "bashlib-ssh.sh"
+# shellcheck source=ssh-x-lib.sh
+source ssh-x-lib.sh
 # shellcheck source=../../bash-lib/lib/bashlib-command.sh
 source "bashlib-command.sh"
 # shellcheck source=../../bash-lib/lib/bashlib-doc.sh
@@ -215,6 +215,7 @@ remove_command(){
   do
      case "$1" in
       "--all"|"-a")
+        # Remove ALL keys from the agent
         ssh-add -D
         shift;
         break;

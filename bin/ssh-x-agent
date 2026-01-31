@@ -11,12 +11,11 @@ error::set_trap
 source "bashlib-echo.sh"
 # shellcheck source=../..//bash-lib/lib/bashlib-doc.sh
 source "bashlib-doc.sh"
-# shellcheck source=../..//bash-lib/lib/bashlib-ssh.sh
-source "bashlib-ssh.sh"
-
+# shellcheck source=ssh-x-lib.sh
+source ssh-x-lib.sh
 
 # The synopsis function is required by the doc::usage
-synopsis(){
+synopsis() {
 
   cat << EOF
 \`\`\`bash
@@ -25,9 +24,11 @@ $(basename "$0") command options
 
 where \`command\` can be:
 
-* \`init\`  - Start one agent by computer (not one by session) and return env statement.
-* \`kill\`  - Stop the agent process (given by \`SSH_AGENT_PID\` or any ssh-agent process).
-* \`state\` - State of the agent
+* \`start\`   - Start one agent by computer (not one by session) and return env statement.
+* \`kill\`    - Stop the agent process (given by \`SSH_AGENT_PID\` or any ssh-agent process).
+* \`restart\` - Kill and start the agent process
+* \`state\`   - State of the agent
+* \`conf\`    - Get a agent configuration
 
 EOF
 
@@ -37,15 +38,14 @@ EOF
 # Main
 ###########
 COMMAND=""
-while [[ $# -gt 0 ]]
-do
-   case "$1" in
+while [[ $# -gt 0 ]]; do
+  case "$1" in
     *)
       COMMAND=$1
       shift
       break
       ;;
-    esac
+  esac
 done
 
 if [ "$COMMAND" == "" ]; then
@@ -54,8 +54,12 @@ if [ "$COMMAND" == "" ]; then
   exit 1
 fi
 case "$COMMAND" in
-  "init")
-    ssh-x-agent-init "$@"
+  "start")
+    ssh-x-agent-start "$@"
+    ;;
+  "restart")
+    ssh::agent_kill || error::exit $?
+    ssh-x-agent-start "$@" || error::exit $?
     ;;
   "synopsis")
     synopsis
@@ -66,8 +70,12 @@ case "$COMMAND" in
   "state")
     ssh::agent_state_human
     ;;
+  "conf")
+    ssh::get_conf "$1" "${2:-}"
+    ;;
   *)
     doc::help
-    echo::err  "Command $COMMAND is unknown"
+    echo::err "Command $COMMAND is unknown"
     exit 1
+    ;;
 esac
