@@ -117,8 +117,9 @@ ssh::add_key() {
   # After the env
   if [ "$SSH_X_CALLERS_LOG" != "" ]; then
     source "bashlib-stack.sh"
-    timestamp=$(date +"%Y%m%d-%H%M%S")
-    CALLER_LOG_DESTINATION="$SSH_X_CALLERS_LOG/${timestamp}-ssh-x.log"
+    DAY_LOG_DIR="$SSH_X_CALLERS_LOG/$(date +"%Y-%m-%d")"
+    mkdir -p "$DAY_LOG_DIR"
+    CALLER_LOG_DESTINATION="$DAY_LOG_DIR/$(date +"%Y%m%d-%H%M%S")-ssh-x.log"
     if ! stack::print_process_tree > "$CALLER_LOG_DESTINATION"; then
       echo::warning "Error while trying to add the caller log"
     fi
