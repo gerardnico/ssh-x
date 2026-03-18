@@ -3,7 +3,7 @@
 # and add keys if available
 
 set -Eeuo pipefail
-export PATH=${SSH_BASHLIB_LIBRARY_PATH}:$PATH
+export PATH=${BASHLIB_PATH}:$PATH
 # shellcheck source=./bashlib-error.sh
 source "bashlib-error.sh"
 source bashlib-error.sh

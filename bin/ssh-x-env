@@ -7,7 +7,7 @@
 # eval "$ENV"
 
 set -Eeuo pipefail
-export PATH=${SSH_BASHLIB_LIBRARY_PATH}:$PATH
+export PATH=${BASHLIB_PATH}:$PATH
 
 if [ "${1:-}" == "synopsis" ]; then
     cat << 'EOF'

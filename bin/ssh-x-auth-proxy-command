@@ -15,7 +15,9 @@
 # export BASHLIB_ECHO_LEVEL=4
 
 set -Eeuo pipefail
-export PATH=${SSH_BASHLIB_LIBRARY_PATH}:$PATH
+export PATH=${BASHLIB_PATH}:$PATH
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+export PATH=${SCRIPT_DIR}:$PATH
 
 # shellcheck source=../../bash-lib/lib/bashlib-error.sh
 source "bashlib-error.sh"
@@ -50,7 +52,6 @@ echo::debug "User: $USER"
 
 
 # Env
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ENV=$(source "$SCRIPT_DIR/ssh-x-env")
 echo::debug "$ENV"
 eval "$ENV"

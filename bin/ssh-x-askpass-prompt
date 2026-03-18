@@ -5,7 +5,7 @@
 # Example: export SSH_ASKPASS=ssh-x-askpass-prompt
 
 set -Eeuo pipefail
-export PATH=${SSH_BASHLIB_LIBRARY_PATH}:$PATH
+export PATH=${BASHLIB_PATH}:$PATH
 # shellcheck source=../..//bash-lib/lib/bashlib-error.sh
 source "bashlib-error.sh"
 source "bashlib-error.sh"
