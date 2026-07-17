@@ -52,7 +52,7 @@ echo::debug "User: $USER"
 
 
 # Env
-ENV=$(source "$SCRIPT_DIR/ssh-x-env")
+ENV=$(source "ssh-x-env")
 echo::debug "$ENV"
 eval "$ENV"
 # Add brew
@@ -68,14 +68,30 @@ echo::debug "Key for destination ($USER@$HOSTNAME): $KEY"
 
 # Check if this is a public key
 # If this is the case, load the private key
-TYPE=$(file -b "$KEY")
+TYPE=$(file -b "$KEY");
+if [[ $TYPE =~ "No such file" ]]; then
+  echo::err "Key (public or private) not found at $KEY. Copy the key from GitHub."
+  echo::err "Example: pass ssh-x/id_git_github.com.pub > $KEY & chmod 0600 $KEY"
+  exit 1
+fi
+
 echo::debug "Key File type: $TYPE"
 if [[ $TYPE =~ "public key" ]]; then
 
+    # Check agent state
+    AGENT_STATE=$(ssh::agent_state)
+    if [ "$AGENT_STATE" == "2" ]; then
+      echo::err "Agent is not running"
+      exit 1
+    fi
+
     # Check if the private key is in the agent
     if ssh::is_key_in_agent "$KEY"; then
-      echo::debug "Private Key is in agent"
+
+      echo::debug "Private Key for key $KEY is in agent"
+
     else
+
       echo::info "Private Key is not in agent"
 
       # Private Key

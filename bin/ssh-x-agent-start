@@ -110,7 +110,10 @@ ssh::agent_load_env "$SSH_X_AGENT_ENV"
 
 # Get the state
 SSH_X_AGENT_RUN_STATE=$(ssh::agent_state)
-if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_X_AGENT_RUN_STATE" = 2 ]; then
+# If file $SSH_X_AGENT_ENV does not exist or is empty
+# if SSH_AUTH_SOCK does not exist
+# if not started
+if [ ! -s "$SSH_X_AGENT_ENV" ] || [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_X_AGENT_RUN_STATE" == 2 ]; then
   echo::info "Agent not started"
   # The sock may be a symlink, so -e check that
   # -f check only if it's a regular file
@@ -121,10 +124,15 @@ if [ ! "$SSH_AUTH_SOCK" ] || [ "$SSH_X_AGENT_RUN_STATE" = 2 ]; then
   echo::info "Starting Agent"
   agent_start "$SSH_X_AGENT_ENV" "$SSH_AUTH_SOCK"
   add_keys
-elif [ "$SSH_AUTH_SOCK" ] && [ "$SSH_X_AGENT_RUN_STATE" = 1 ]; then
-  echo::info "Agent started but empty, trying to add keys"
+elif [ "$SSH_X_AGENT_RUN_STATE" == 1 ]; then
+  echo::info "Agent started but empty, trying to add keys (State $SSH_X_AGENT_RUN_STATE, Sock: $SSH_AUTH_SOCK)"
   add_keys
+elif [ "$SSH_X_AGENT_RUN_STATE" == 0 ]; then
+  echo::info "Agent is started with key (State $SSH_X_AGENT_RUN_STATE, Sock: $SSH_AUTH_SOCK)"
+else
+  echo::err "Error: ssh agent state is $SSH_X_AGENT_RUN_STATE"
+  echo::err "Error: sock file is $SSH_AUTH_SOCK"
 fi
 
-# Output the export script
+echo::debug "Output the export script ($SSH_X_AGENT_ENV)"
 cat "$SSH_X_AGENT_ENV"
